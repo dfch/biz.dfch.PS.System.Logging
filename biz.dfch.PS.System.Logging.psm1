@@ -155,7 +155,7 @@ Reimplements the logging functionality from VCO.
 						return;
 					} # if()
 			
-					[string] $sFileMessageFormat = "{0}|{1}|{2}|{3}|{4}";
+					[string] $sFileMessageFormat = "{0}|{1}|{2}|{3}|{4}|{5}";
 					switch($Severity) {
 					$SysLogSeverity_EMERGENCY {
 						# $biz_dfch_PS_System_Logging.Logger.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
