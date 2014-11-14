@@ -1,6 +1,6 @@
 Set-Variable MODULE_NAME -Option 'Constant' -Value 'biz.dfch.PS.System.Logging';
 Set-Variable MODULE_VARIABLE -Option 'Constant' -Value $($MODULE_NAME.Replace('.', '_'));
-Set-Variable MODULE_URI_BASE -Option 'Constant' -Value 'http://dfch.biz/PS/System/Logging/';
+Set-Variable MODULE_URI_BASE -Option 'Constant' -Value 'http://dfch.biz/biz/dfch/PS/System/Logging/';
 
 Set-Variable gotoSuccess -Option 'Constant' -Value 'biz.dfch.System.Exception.gotoSuccess';
 Set-Variable gotoFailure -Option 'Constant' -Value 'biz.dfch.System.Exception.gotoFailure';
@@ -116,7 +116,7 @@ Out-Message -Facility 16 -Severity 6 -FunctionName "function-name" -Message "Mes
 
 .LINK
 
-http://dfch.biz/PS/System/Logging/Out-Message/
+http://dfch.biz/biz/dfch/PS/System/Logging/Out-Message/
 
 
 
@@ -126,7 +126,7 @@ Reimplements the logging functionality from VCO.
 
 #>
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-Message/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-Message/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -203,7 +203,7 @@ Export-ModuleMember -Function Out-Message;
 
 function Out-MessageEmergency() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageEmergency/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageEmergency/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -223,7 +223,7 @@ Export-ModuleMember -Function Out-MessageEmergency -Alias Log-Emergency;
 
 function Out-MessageCritical() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageCritical/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageCritical/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -243,7 +243,7 @@ Export-ModuleMember -Function Out-MessageCritical -Alias Log-Critical;
 
 function Out-MessageAlert() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageAlert/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageAlert/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -263,7 +263,7 @@ Export-ModuleMember -Function Out-MessageAlert -Alias Log-Alert;
 
 function Out-MessageError() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageError/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageError/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -284,7 +284,7 @@ Export-ModuleMember -Function Out-MessageError -Alias Log-Error, Log-Err;
 
 function Out-MessageWarning() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageWarning/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageWarning/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -305,7 +305,7 @@ Export-ModuleMember -Function Out-MessageWarning -Alias Log-Warning, Log-Warn;
 
 function Out-MessageNotice() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageNotice/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageNotice/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -325,7 +325,7 @@ Export-ModuleMember -Function Out-MessageNotice -Alias Log-Notice;
 
 function Out-MessageInformational() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageInformational/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageInformational/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
@@ -346,7 +346,7 @@ Export-ModuleMember -Function Out-MessageInformational -Alias Log-Informational,
 
 function Out-MessageDebug() {
 	[CmdletBinding(
-		HelpURI='http://dfch.biz/PS/System/Logging/Out-MessageDebug/'
+		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageDebug/'
     )]
     Param (
 			[Parameter(Mandatory = $true)]
