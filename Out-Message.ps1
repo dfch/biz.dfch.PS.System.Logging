@@ -286,6 +286,20 @@ Set-Alias -Name Log-Info -Value Out-MessageInformational;
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageInformational -Alias Log-Informational, Log-Info; }
 
 function Out-MessageDebug() {
+<#
+.SYNOPSIS
+
+Logs a DEBUG message to the default logger.
+
+
+.EXAMPLE
+
+Log-Debug "funcenstein" ("DateTime now '{0}'" -f [DateTime]::Now)
+
+Logs a DEBUG message for function "funcenstein" to the default logger, if enabled for this log level.
+
+
+#>
 	[CmdletBinding(
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageDebug/'
     )]
