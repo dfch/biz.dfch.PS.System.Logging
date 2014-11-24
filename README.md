@@ -9,4 +9,4 @@ This Microsoft PowerShell module contains Cmdlets that allow to perform logging 
 
 You can also download this module via [NuGet](http://nuget.org) with [Install-Package biz.dfch.PS.System.Logging](https://www.nuget.org/packages/biz.dfch.PS.System.Logging/)
 
-See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ or the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for mor information.
+See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for more information.
