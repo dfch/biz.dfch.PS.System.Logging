@@ -21,6 +21,21 @@ if($true -ne (Test-Path variable:$($mvar))) {
 } # if()
 Export-ModuleMember -Variable $mvar;
 
+[string] $ManifestFile = '{0}.psd1' -f (Get-Item $PSCommandPath).BaseName;
+$ManifestPathAndFile = Join-Path -Path $PSScriptRoot -ChildPath $ManifestFile;
+if( Test-Path -Path $ManifestPathAndFile)
+{
+	$Manifest = (Get-Content -raw $ManifestPathAndFile) | iex;
+	foreach( $ScriptToProcess in $Manifest.ScriptsToProcess) 
+	{ 
+		$ModuleToRemove = (Get-Item (Join-Path -Path $PSScriptRoot -ChildPath $ScriptToProcess)).BaseName;
+		if(Get-Module $ModuleToRemove)
+		{ 
+			Remove-Module $ModuleToRemove -ErrorAction:SilentlyContinue;
+		}
+	}
+}
+
 # $mvar.Log4NetPathAndFileFile = Join-Path -Path $ModuleDirectoryBase -ChildPath "log4net.dll";
 # Add-Type -Path $mvar.Log4NetPathAndFileFile;
 # $mvar.Log4NetConfigurationFile = Join-Path -Path $ModuleDirectoryBase -ChildPath $mvar.Log4NetConfigurationFile;
@@ -57,8 +72,8 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3o4AwVKThf4oKsToEiFpsF3u
-# vf2gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUf4Uj3RgBi+UO+CuitjwPPY0K
+# wS2gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -156,25 +171,25 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTwT4ZJzeGBRy+xXDWV
-# 0f5DnIyvXjANBgkqhkiG9w0BAQEFAASCAQBMS+5mbhVKG54M7r75bUxhRmtGBdDR
-# 4S64tFp3+pnf1+9YUS8/xj6QPn6b4RjpO572DsVHHMFwgWurqnw725Yig1+bGgjt
-# sVhWwLLj5Hs84zNP7LFWt5o8sDNKGdfM/fjaf1gpM2t6Wg1Sod+zqTDl1aXczuAg
-# 3qI5n9z9HeDvSWc68AK1IXS5sDOEayob5NrTKLzpPA3+BXm34GSft/wXAQiUcNo4
-# 50i6yEgvm19YY4aum/IwTyqwZMPpgtxQICti9xJj0bu8WZsXIkaoQIoOharMWzgN
-# YvPXiexaxH1RiDBN46K/xfdQWVPSNIPw+tUKX+rLEwW45dGOA+XPF/gooYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRxeEKJIuX+IwWtJDF3
+# F2EFIuNhpDANBgkqhkiG9w0BAQEFAASCAQBDTEd54OpFh9cSgBSrMqH38SvIpqTM
+# 0NC6BUKLDLiUvXnvfiE8u7IsiB7q1hHSj/nMaagBMgKmDbYGHlB1odmYVkxz3e6W
+# SjD+hI/eNPy8KAh8xWIwcSazt4SP4yuX17qizcdT50q5C03gApzrfEnscjeKCtME
+# waaEicGqEmB/hu0s//Tq22o0xEIFCT6kMxqZh0FU8UgYLudIUQcBsJQWUZPiURif
+# j0k1pHpwHpfShthykwQ1ZXswIwt1kL7p1BLfibatyhEPDgGE/iutQ1UJbXhQ23oK
+# I6C6j8U2Z/QImHWGgdwXcZJMW24C+nJbv8qwdRP0DvPsMLud9LsEnSGwoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjYyMVowIwYJKoZIhvcNAQkEMRYEFKpbOpTXhrLj8uF3JkbXE56+EVzlMIGd
+# NjA3Mzg1M1owIwYJKoZIhvcNAQkEMRYEFEEUjTIey8vM705iF3AgoC4otiGfMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAYAEk6yBBMQ3bPL4C0cizd
-# 5AdhcECijCmz5uyZTd8NTHNOc3kHosSdXOdoWecMzkqYLUTqfzL1UNvU6OpeqxBk
-# wlVl7wl280hNLOVOzqShOjvgRV+zofdZX99bGaQn8lQiXnwsSu4CDauCHoGWo9YY
-# OholBm9GzkBzRmiemZuK5ndGuNHPhuiXf8PUMCm5+kQyZQim4mZMU/UAKmLVP1qS
-# tCWqgGHyyg1xk/gLY9OAy4h1dSmN1x54qIQ8nSZMie5KaauwbaKe2ypWnuL5gIXD
-# E8PckJ89xUmgvVYfuqpZnFpIERd2yGR1XF/V36H3NjsGfwq7zsb7Qvn/qnxZy3zG
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQABonwUsGO6RQCiSXDxRS3+
+# qfjSOzPNb/jfZ+Kfg8ynS7YEStDMkdhlb2zSqRzm3bjZWMlPqo3k9O8r8HHlYRAY
+# vrQ08zZ88SEWmzlKC2RreNlzJAjzKRZwLYiFs64kr8hRVt66wz8uvMwIKw5pPb1W
+# hE3p0B0gWDrDrAgzHLr3wF+5/hyzZNzqoYvpN9d/mxG2JUtX6hgZ43J7DA4rRoLA
+# M4LfrI1a+v9fSG1IThK0NNVHYXZcMllKtaO4dSQoVsQrUx2Xm5rgx59W4ptacjiu
+# g7Wc8rUtiVAqkw0KUOA86Wb0ln2a3g0WgCy1G/+EfUIzjKbdsu1GMDTGwgu+jXqL
 # SIG # End signature block
