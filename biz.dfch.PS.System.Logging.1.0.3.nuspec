@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>biz.dfch.PS.System.Logging</id>
+        <version>1.0.3</version>
+        <title>biz.dfch.PS.System.Logging</title>
+        <authors>d-fens GmbH</authors>
+        <owners>Ronald Rink</owners>
+        <licenseUrl>https://github.com/dfch/biz.dfch.PS.System.Logging/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/dfch/biz.dfch.PS.System.Logging</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/dfch/fragments/master/logo-32x32.png</iconUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>biz.dfch.PS.System.Logging
+==========================
+
+Modules: biz.dfch.PS.System.Logging
+
+d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
+
+This Microsoft PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.
+
+See the [d-fens Web Site](http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/) or the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki#windows-file-protection) for further information.</description>
+        <summary>This Microsoft PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.</summary>
+        <releaseNotes>Updated digital signatures. They are now created with Set-AuthenticodeSignature (without kernel driver certificate) which results in a smaller signature block.</releaseNotes>
+        <copyright>(c) 2014 d-fens GmbH</copyright>
+        <language>en-US</language>
+        <tags>PowerShell dfch Logging log4net</tags>
+    </metadata>
+</package>
