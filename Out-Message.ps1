@@ -2,143 +2,145 @@ function Out-Message {
 <#
 
 .SYNOPSIS
-
-Logs a message to default message log file.
-
+Logs a message to default message log target.
 
 
 .DESCRIPTION
+Logs a message to default message log target.
 
-Logs a message in SYSLOG format to a predefined autoselected log file in a synchronous way.
-
+Logs a message in SYSLOG style to a defined autoselected log target in a synchronous way.
 
 
 .OUTPUTS
-
 This Cmdlet does not return a parameter.
 
 
-
 .PARAMETER path
-
 A SYSLOG severity. Default Informational (16).
 
 
-
 .PARAMETER facility 
-
-A SYSLOG facility. Default $biz_dfch_PS_System_Logging.Facility.LOCAL0 (16).
-
+A SYSLOG facility. Default LOCAL0 (16).
 
 
 .EXAMPLE
+Out-Message 16 6 "function-name" "Message string"
 
 Logs a message to with facility := LOCAL0 and severity := Info
-
-Out-Message $biz_dfch_PS_System_Logging.Facility.LOCAL0 $biz_dfch_PS_System_Logging.Severity.INFO "function-name" "Message string"
-
 
 
 .EXAMPLE
-
-Logs a message to with facility := LOCAL0 and severity := Info
-
 Out-Message 16 6 "function-name" "Message string"
 
 
+Logs a message to with facility := LOCAL0 and severity := Info
+
 
 .EXAMPLE 
-
-Logs a message to with facility := LOCAL0 and severity := Informational. Full parameter names are specified.
-
 Out-Message -Facility 16 -Severity 6 -FunctionName "function-name" -Message "Message string"
 
 
+Logs a message to with facility := LOCAL0 and severity := Informational. Full parameter names are specified.
+
 
 .LINK
-
 http://dfch.biz/biz/dfch/PS/System/Logging/Out-Message/
 
 
 
 .NOTES
-
-Reimplements the logging functionality from VCO.
+This is a wrapper around the Apache 2.0 LOG4NET library.
 
 #>
-	[CmdletBinding(
-		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-Message/'
-    )]
-    Param (
-			[Parameter(Mandatory = $true)]
-			[alias("sev")]
-			[ValidateRange(0,7)]
-			[int] $Severity = $(throw("You must specify a severity level.")), 
-			[Parameter(Mandatory = $true)]
-			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
-			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
-			[Parameter(Mandatory = $false)]
-			[alias("fac")]
-			[ValidateRange(0,23)]
-			[int] $Facility = 0
-		) # Param
-    PROCESS {
-				try {
-					# Translate input parameters to strings
-					[string] $FacilityString = $aFacility[$Facility];
-					[string] $SeverityString = $aSeverity[$Severity];
 
-					# Return if file logging option is not set
-					if($true -ne $biz_dfch_PS_System_Logging.FileLogging) {
-						return;
-					} # if()
-			
-					[string] $sFileMessageFormat = "{0}|{1}|{2}|{3}|{4}|{5}";
-					switch($Severity) {
-					$SysLogSeverity_EMERGENCY {
-						# $biz_dfch_PS_System_Logging.Logger.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
-						$biz_dfch_PS_System_Logging.Esacalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
+[CmdletBinding(
+	HelpURI = 'http://dfch.biz/biz/dfch/PS/System/Logging/Out-Message/'
+)]
+
+Param (
+		[Parameter(Mandatory = $true)]
+		[alias("sev")]
+		[ValidateRange(0,7)]
+		[int] $Severity = $(throw("You must specify a severity level.")), 
+		[Parameter(Mandatory = $true)]
+		[alias("fn")]
+		[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
+		[Parameter(Mandatory = $true)]
+		[alias("msg")]
+		[string] $Message = $(throw("You must specify a message string for logging.")), 
+		[Parameter(Mandatory = $false)]
+		[alias("fac")]
+		[ValidateRange(0,23)]
+		[int] $Facility = 0
+)
+
+PROCESS 
+{
+			try 
+			{
+				# Translate input parameters to strings
+				[string] $FacilityString = $aFacility[$Facility];
+				[string] $SeverityString = $aSeverity[$Severity];
+
+				# Return if file logging option is not set
+				if($true -ne $biz_dfch_PS_System_Logging.FileLogging) 
+				{
+					return;
+				}
+		
+				[string] $sFileMessageFormat = "{0}|{1}|{2}|{3}|{4}|{5}";
+				switch($Severity) 
+				{
+					$SysLogSeverity_EMERGENCY 
+					{
+						$biz_dfch_PS_System_Logging.Escalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_CRITICAL {
-						# $biz_dfch_PS_System_Logging.Logger.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
-						$biz_dfch_PS_System_Logging.Esacalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
+					$SysLogSeverity_CRITICAL 
+					{
+						$biz_dfch_PS_System_Logging.Escalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_ALERT {
-						# $biz_dfch_PS_System_Logging.Logger.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
-						$biz_dfch_PS_System_Logging.Esacalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
+					$SysLogSeverity_ALERT 
+					{
+						$biz_dfch_PS_System_Logging.Escalated.FatalFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_ERROR {
+					$SysLogSeverity_ERROR 
+					{
 						$biz_dfch_PS_System_Logging.Logger.ErrorFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_WARN {
+					$SysLogSeverity_WARN 
+					{
 						$biz_dfch_PS_System_Logging.Logger.WarnFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_NOTICE {
+					$SysLogSeverity_NOTICE 
+					{
 						$biz_dfch_PS_System_Logging.Logger.InfoFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_INFO {
+					$SysLogSeverity_INFO 
+					{
 						$biz_dfch_PS_System_Logging.Logger.DebugFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					$SysLogSeverity_DEBUG {
+					$SysLogSeverity_DEBUG 
+					{
 						$biz_dfch_PS_System_Logging.Logger.DebugFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					default {
+					default 
+					{
 						$biz_dfch_PS_System_Logging.Logger.DebugFormat($sFileMessageFormat, $SeverityString, $Host.InstanceId, $biz_dfch_PS_System_Logging.EventSource, $FacilityString, $FunctionName, $Message);
 					}
-					} # switch
-				} # try
-				catch {
-					Write-Verbose "catch ALL";
-					Write-Verbose $_.Exception.Message;
-					$error
-				} # catch
-				finally {
-					# N/A
-				} # finally
-    } # PROCESS
+				}
+			}
+			catch 
+			{
+				Write-Verbose "catch ALL";
+				Write-Verbose $_.Exception.Message;
+				$error
+			}
+			finally 
+			{
+				# N/A
+			}
+}
+
 } # function
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-Message; }
 
@@ -320,11 +322,30 @@ Set-Alias -Name Log-Debug -Value 'Out-MessageDebug';
 Set-Alias -Name Log-Dbg -Value 'Out-MessageDebug';
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -Alias Log-Debug, Log-Dbg; } 
 
+<##
+ #
+ #
+ # Copyright 2015 Ronald Rink, d-fens GmbH
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+ #
+ # http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ #
+ #>
+
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUswfLiBJ/zroQ9ZZUdmre8DFQ
-# x5qgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUW+xUOpmPt84CvQBG0sRkKDHf
+# 4i6gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -368,12 +389,12 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # cME9fte9LyrD4vWPDJDca6XIvmheXW34eNK+SZUeFXgIkfs0yL6Erbzgxt0Y2/PK
 # 8HvCFDwYuAO6lT4hHj9gaXp/agOejUr58CgsMIRe7CZyQrFty2TDEozWhEtnQXyx
 # Axd4CeOtqLaWLaR+gANPiPfBa1pGFc0sGYvYcJzlLUmIYHKopBlScENe2tZGA7Bo
-# DiTvSvYLJSTvJDCCBJ8wggOHoAMCAQICEhEhQFwfDtJYiCvlTYaGuhHqRTANBgkq
+# DiTvSvYLJSTvJDCCBJ8wggOHoAMCAQICEhEhBqCB0z/YeuWCTMFrUglOAzANBgkq
 # hkiG9w0BAQUFADBSMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
 # di1zYTEoMCYGA1UEAxMfR2xvYmFsU2lnbiBUaW1lc3RhbXBpbmcgQ0EgLSBHMjAe
-# Fw0xMzA4MjMwMDAwMDBaFw0yNDA5MjMwMDAwMDBaMGAxCzAJBgNVBAYTAlNHMR8w
+# Fw0xNTAyMDMwMDAwMDBaFw0yNjAzMDMwMDAwMDBaMGAxCzAJBgNVBAYTAlNHMR8w
 # HQYDVQQKExZHTU8gR2xvYmFsU2lnbiBQdGUgTHRkMTAwLgYDVQQDEydHbG9iYWxT
-# aWduIFRTQSBmb3IgTVMgQXV0aGVudGljb2RlIC0gRzEwggEiMA0GCSqGSIb3DQEB
+# aWduIFRTQSBmb3IgTVMgQXV0aGVudGljb2RlIC0gRzIwggEiMA0GCSqGSIb3DQEB
 # AQUAA4IBDwAwggEKAoIBAQCwF66i07YEMFYeWA+x7VWk1lTL2PZzOuxdXqsl/Tal
 # +oTDYUDFRrVZUjtCoi5fE2IQqVvmc9aSJbF9I+MGs4c6DkPw1wCJU6IRMVIobl1A
 # cjzyCXenSZKX1GyQoHan/bjcs53yB2AsT1iYAGvTFVTg+t3/gCxfGKaY/9Sr7KFF
@@ -387,12 +408,12 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # Y3JsMFQGCCsGAQUFBwEBBEgwRjBEBggrBgEFBQcwAoY4aHR0cDovL3NlY3VyZS5n
 # bG9iYWxzaWduLmNvbS9jYWNlcnQvZ3N0aW1lc3RhbXBpbmdnMi5jcnQwHQYDVR0O
 # BBYEFNSihEo4Whh/uk8wUL2d1XqH1gn3MB8GA1UdIwQYMBaAFEbYPv/c477/g+b0
-# hZuw3WrWFKnBMA0GCSqGSIb3DQEBBQUAA4IBAQACMRQuWFdkQYXorxJ1PIgcw17s
-# LOmhPPW6qlMdudEpY9xDZ4bUOdrexsn/vkWF9KTXwVHqGO5AWF7me8yiQSkTOMjq
-# IRaczpCmLvumytmU30Ad+QIYK772XU+f/5pI28UFCcqAzqD53EvDI+YDj7S0r1tx
-# KWGRGBprevL9DdHNfV6Y67pwXuX06kPeNT3FFIGK2z4QXrty+qGgk6sDHMFlPJET
-# iwRdK8S5FhvMVcUM6KvnQ8mygyilUxNHqzlkuRzqNDCxdgCVIfHUPaj9oAAy126Y
-# PKacOwuDvsu4uyomjFm4ua6vJqziNKLcIQ2BCzgT90Wj49vErKFtG7flYVzXMIIE
+# hZuw3WrWFKnBMA0GCSqGSIb3DQEBBQUAA4IBAQCAMtwHjRygnJ08Kug9IYtZoU1+
+# zETOA75+qrzE5ntzu0vxiNqQTnU3KDhjudcrD1SpVs53OZcwc82b2dkFRRyNpLgD
+# XU/ZHC6Y4OmI5uzXBX5WKnv3FlujrY+XJRKEG7JcY0oK0u8QVEeChDVpKJwM5B8U
+# FiT6ddx0cm5OyuNqQ6/PfTZI0b3pBpEsL6bIcf3PvdidIZj8r9veIoyvp/N3753c
+# o3BLRBrweIUe8qWMObXciBw37a0U9QcLJr2+bQJesbiwWGyFOg32/1onDMXeU+dU
+# PFZMyU5MMPbyXPsajMKCvq1ZkfYbTVV7z1sB3P16028jXDJHmwHzwVEURoqbMIIE
 # rTCCA5WgAwIBAgISESFgd9/aXcgt4FtCBtsrp6UyMA0GCSqGSIb3DQEBBQUAMFEx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMScwJQYDVQQD
 # Ex5HbG9iYWxTaWduIENvZGVTaWduaW5nIENBIC0gRzIwHhcNMTIwNjA4MDcyNDEx
@@ -422,25 +443,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTz//IgZLBGKpUT4hYz
-# 9h5kMOEM9jANBgkqhkiG9w0BAQEFAASCAQBdCht+5MD9KG0sV6+PIcI3lrNMEw5A
-# KYmLpYzY3GkrHeo0eTmWA5j7v5eIB6GsRDmoCfO08FIAaxDoLs9iIQVoJuoWwLYD
-# hKda1ZNYFPLlcUUkW56CbXVzvBWpkucWffiaM58kf1odkq6bSBUBW7V9KQwFjtRa
-# oiu6N6sUaOwnz21WC6hDodWzzhn+1O0kWe5fx3XNAU1ChNv+fVD67SXjYbzROKRH
-# L5ixeHLtOxWTFRwx21cQK2LotI+HuB0/6P6g3RE1ZHlCPfR73mj1/DbCzgcvT+3B
-# NmvNe/NqRbDIDBvjulsFU8z9rFf/6TlCVMXsjNhRQIDJnksJaYHxLXKtoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSPEizXcpFoJQ9v0z9n
+# cU+fwPSBdzANBgkqhkiG9w0BAQEFAASCAQBzNh8MmP72vn2n6n91+mJp7WqriYJK
+# bNiGgXgtzANZqrqsViPnhFHfUawvBr9YaZ7zHG/W7g93hlf5Q3Po99NHut8ZQprX
+# VSFM0r6CR8gnuuRXrq4O5RCNUkmQnTDEZMboUTXraNwSwUTt8PwHP8P6MyVwiFuV
+# d6DoqoxMyygVzjQwkPa0YcdFWOfqtIvGMmUvnjQ27pPfbjQ8JJJf6rPHrfHwtBv7
+# DFPke119y/TYJuWGOwFSKB+z4VY0iug3LgIkG2U5uKqwZOm42eJ1pyuMl0fOxH4y
+# tU0ODfA4p3ZuqAh3/u3jYU+TPWry2teUSJByniEfak+Wu0S/celsZqqooYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
-# YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjU1MVowIwYJKoZIhvcNAQkEMRYEFOmuax13AdDkROxbETtw94RTNi0bMIGd
-# BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
+# YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUAoIH9
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDMy
+# NjEwMjI1NVowIwYJKoZIhvcNAQkEMRYEFC61ZivRO+/ogNG7ED8Mud90rvN3MIGd
+# BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7EsKeYw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
-# KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBgEbxBrCrBWv7pFyQs9EuN
-# Nv4aZ+JccKMK8mhsoXVMyklgWjeYwe1FlD8wdoI4vu9nA+0neRx3ztvSEx0Aq9eC
-# EDrL/uJTTmqb6uML483qOoqZhZW/v+jHn0HXXU5MHFtdxwUFO1qCkU6ryJkXpL2Z
-# qNjFxTSnGhu0dPkn6hdx1sOQcn7xiAWSbAPcy/zl0SypK0maQP4BpSkIBDOvxLLL
-# DnP8XsGlpHvZjckj3dEO+EnHCdX87y2lzAKpUq3U6BRtAoAx3r5tWY0iXCamXdh3
-# pJAxfJQdT99eKmXYk7P4abC3ZiNriPCzYC1VGde2HA4yX3O5jGxN40jiFWTbgrXY
+# KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhBqCB
+# 0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQCUfJuVGuH0ikqCsG07qL/H
+# uTC4eV7FHmBL+8uJlkz8TDAF+OflxVb+9MAAghJHFYBeZughLHzgp+PA5Jz1cOIm
+# aVl2H59Dw+22Tm9Wy6O2NV+s8m3+Os2rM25uCJ0P3VDxXIOZVTXU1LnNZDtMayHc
+# eIq5bEo59h2KyXqtvDfJ6bZQk8coKEnYHIwxGO2aOGcSSgCklsXjdpiNqFeBnyBz
+# xpZqI8L2CwyKUQV9dbsj9BEBPV2O9mKB5KS50M5hKxMmpVCuAT24T+hMGMApyjjo
+# AO3Zo39DQsbosdoFfFI9Pi7+DL+WF8K3aGSdn35NRlu0QeYARQzoCIX8On/4lhae
 # SIG # End signature block
