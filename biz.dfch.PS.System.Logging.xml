@@ -15,7 +15,7 @@
       </En>
       <En>
         <S N="Key">EventSource</S>
-        <S N="Value">biz.dfch.PS.System.Logging.Default</S>
+        <S N="Value">Default</S>
       </En>
       <En>
         <S N="Key">Severity</S>
@@ -84,110 +84,6 @@
       <En>
         <S N="Key">EventLogging</S>
         <B N="Value">false</B>
-      </En>
-      <En>
-        <S N="Key">Facility</S>
-        <Obj N="Value" RefId="20">
-          <TNRef RefId="0" />
-          <DCT>
-            <En>
-              <S N="Key">LOCAL4</S>
-              <I32 N="Value">20</I32>
-            </En>
-            <En>
-              <S N="Key">NEWS</S>
-              <I32 N="Value">7</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL7</S>
-              <I32 N="Value">23</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL0</S>
-              <I32 N="Value">16</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL6</S>
-              <I32 N="Value">22</I32>
-            </En>
-            <En>
-              <S N="Key">AUDIT</S>
-              <I32 N="Value">13</I32>
-            </En>
-            <En>
-              <S N="Key">CLOCK</S>
-              <I32 N="Value">15</I32>
-            </En>
-            <En>
-              <S N="Key">SYSLOG</S>
-              <I32 N="Value">5</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL5</S>
-              <I32 N="Value">21</I32>
-            </En>
-            <En>
-              <S N="Key">NTP</S>
-              <I32 N="Value">12</I32>
-            </En>
-            <En>
-              <S N="Key">NONE</S>
-              <I32 N="Value">0</I32>
-            </En>
-            <En>
-              <S N="Key">LPR</S>
-              <I32 N="Value">6</I32>
-            </En>
-            <En>
-              <S N="Key">UUCP</S>
-              <I32 N="Value">8</I32>
-            </En>
-            <En>
-              <S N="Key">CRON</S>
-              <I32 N="Value">9</I32>
-            </En>
-            <En>
-              <S N="Key">MAIL</S>
-              <I32 N="Value">2</I32>
-            </En>
-            <En>
-              <S N="Key">AUTHPRIV</S>
-              <I32 N="Value">10</I32>
-            </En>
-            <En>
-              <S N="Key">DAEMON</S>
-              <I32 N="Value">3</I32>
-            </En>
-            <En>
-              <S N="Key">INIT</S>
-              <I32 N="Value">1</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL2</S>
-              <I32 N="Value">18</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL1</S>
-              <I32 N="Value">17</I32>
-            </En>
-            <En>
-              <S N="Key">FTP</S>
-              <I32 N="Value">11</I32>
-            </En>
-            <En>
-              <S N="Key">AUTH</S>
-              <I32 N="Value">4</I32>
-            </En>
-            <En>
-              <S N="Key">LOCAL3</S>
-              <I32 N="Value">19</I32>
-            </En>
-            <En>
-              <S N="Key">ALERT</S>
-              <I32 N="Value">14</I32>
-            </En>
-          </DCT>
-        </Obj>
       </En>
       <En>
         <S N="Key">Log4NetFileAppender</S>
