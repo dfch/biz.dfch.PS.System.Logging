@@ -1,140 +1,173 @@
-@{
-
-# Script module or binary module file associated with this manifest.
-RootModule = 'biz.dfch.PS.System.Logging.psm1'
-
-# Version number of this module.
-ModuleVersion = '1.0.5.20150326'
-
-# ID used to uniquely identify this module
-GUID = 'bb42dde0-0260-40bc-85e2-d8b6de1b5c0e'
-
-# Author of this module
-Author = 'Ronald Rink'
-
-# Company or vendor of this module
-CompanyName = 'd-fens GmbH'
-
-# Copyright statement for this module
-Copyright = '(c) 2012-2015 d-fens GmbH. Distributed under Apache 2.0 license.'
-
-# Description of the functionality provided by this module
-Description = 'This PowerShell module contains Cmdlets that allow to perform logging from your PowerShell functions and code via the Apache Log4Net library.'
-
-# Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '3.0'
-
-# Name of the Windows PowerShell host required by this module
-# PowerShellHostName = ''
-
-# Minimum version of the Windows PowerShell host required by this module
-# PowerShellHostVersion = ''
-
-# Minimum version of the .NET Framework required by this module
-DotNetFrameworkVersion = '4.5'
-
-# Minimum version of the common language runtime (CLR) required by this module
-# CLRVersion = ''
-
-# Processor architecture (None, X86, Amd64) required by this module
-# ProcessorArchitecture = ''
-
-# Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @(
-# )
-
-# Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @(
-	'log4net.dll'
+[CmdletBinding()]
+PARAM
+( 
+	[string] $ModuleName = ([regex]::Match((Get-Item $PSScriptRoot).Name, '^(.+)\.\d\.\d\.\d$')).Groups[1].Value
 )
 
-# Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = @(
-	'Import-Module.ps1'
-)
+END
+{
+	if([String]::IsNullOrWhiteSpace($ModuleName))
+	{
+		$ex = New-Object System.ArgumentNullException('ModuleName', 'ModuleName: Parameter validation FAILED. Parameter must not be null or empty. Please choose a module name.');
+		throw $ex;
+	}
+    $modulePath = Join-Path -Path $env:ProgramFiles -ChildPath "WindowsPowerShell\Modules";
+    $targetDirectory = Join-Path -Path $modulePath -ChildPath $ModuleName;
 
-# ModuleToProcess = @()
+    $scriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent;
+    $sourceDirectory = Join-Path -Path $scriptRoot -ChildPath Tools;
 
-# Type files (.ps1xml) to be loaded when importing this module
-# TypesToProcess = @()
+	Write-Verbose ("Creating/updating module '{0}' in '{1}' ..." -f $ModuleName, $targetDirectory);
+    Update-Directory -Source $sourceDirectory -Destination $targetDirectory;
 
-# Format files (.ps1xml) to be loaded when importing this module
-# FormatsToProcess = @()
+    if ($PSVersionTable.PSVersion.Major -lt 4)
+    {
+        $modulePaths = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine') -split ';'
+        if ($modulePaths -notcontains $modulePath)
+        {
+            Write-Verbose "Adding '$modulePath' to PSModulePath."
 
-# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @(
-	'Out-Message.ps1'
-)
+            $modulePaths = @(
+                $modulePath
+                $modulePaths
+            )
 
-# Functions to export from this module
-FunctionsToExport = '*'
+            $newModulePath = $modulePaths -join ';'
 
-# Cmdlets to export from this module
-CmdletsToExport = '*'
-
-# Variables to export from this module
-VariablesToExport = '*'
-
-# Aliases to export from this module
-AliasesToExport = '*'
-
-# List of all modules packaged with this module.
-# ModuleList = @()
-
-# List of all files packaged with this module
-FileList = @(
-	'biz.dfch.PS.System.Logging.xml'
-	,
-	'Log4netConfiguration.xml'
-	,
-	'log4net.xml'
-	,
-	'LICENSE'
-	,
-	'NOTICE'
-	,
-	'Import-Module.ps1'
-	,
-	'README.md'
-)
-
-# Private data to pass to the module specified in RootModule/ModuleToProcess
-PrivateData = @{
-	"MODULEVAR" = "biz_dfch_PS_System_Logging"
+            [Environment]::SetEnvironmentVariable('PSModulePath', $newModulePath, 'Machine');
+            $env:PSModulePath += ";$modulePath";
+        }
+    }
 }
 
-# HelpInfo URI of this module
-HelpInfoURI = 'http://dfch.biz/biz/dfch/PS/System/Logging/'
+BEGIN
+{
+    function Update-Directory
+    {
+        [CmdletBinding()]
+        PARAM
+		(
+            [Parameter(Mandatory = $true)]
+            [string] $Source
+			,
+            [Parameter(Mandatory = $true)]
+            [string] $Destination
+        )
 
-# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
-# DefaultCommandPrefix = ''
+        $Source = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Source);
+        $Destination = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Destination);
 
+        if (!(Test-Path -LiteralPath $Destination))
+        {
+            $null = New-Item -Path $Destination -ItemType Directory -ErrorAction Stop;
+        }
+
+        try
+        {
+            $sourceItem = Get-Item -LiteralPath $Source -ErrorAction Stop
+            $destItem = Get-Item -LiteralPath $Destination -ErrorAction Stop
+
+            if ($sourceItem -isnot [System.IO.DirectoryInfo] -or $destItem -isnot [System.IO.DirectoryInfo])
+            {
+                throw ("ERROR: '{0}' and '{1}' are not of type [DirectoryInfo]." -f ($sourceItem | Out-String), ($destItem | Out-String));
+            }
+        }
+        catch
+        {
+            throw 'ERROR: Both Source and Destination must be directory paths.';
+        }
+
+        $sourceFiles = Get-ChildItem -Path $Source -Recurse | Where-Object { -not $_.PSIsContainer };
+
+        foreach ($sourceFile in $sourceFiles)
+        {
+            $relativePath = Get-RelativePath $sourceFile.FullName -RelativeTo $Source;
+            $targetPath = Join-Path -Path $Destination -ChildPath $relativePath;
+
+            $sourceHash = Get-FileHash -Path $sourceFile.FullName;
+            $destHash = Get-FileHash -Path $targetPath;
+
+            if ($sourceHash -ne $destHash)
+            {
+                $targetParent = Split-Path $targetPath -Parent;
+
+                if (-not (Test-Path -Path $targetParent -PathType Container))
+                {
+                    $null = New-Item -Path $targetParent -ItemType Directory -ErrorAction Stop;
+                }
+
+                Write-Verbose "Updating file $relativePath to new version.";
+                Copy-Item $sourceFile.FullName -Destination $targetPath -Force -ErrorAction Stop;
+            }
+        }
+
+        $targetFiles = Get-ChildItem -Path $Destination -Recurse | Where-Object { -not $_.PSIsContainer };
+    
+        foreach ($targetFile in $targetFiles)
+        {
+            $relativePath = Get-RelativePath $targetFile.FullName -RelativeTo $Destination;
+            $sourcePath = Join-Path -Path $Source -ChildPath $relativePath;
+
+            if (-not (Test-Path $sourcePath -PathType Leaf))
+            {
+                Write-Verbose "Removing unknown file $relativePath from module folder.";
+                Remove-Item -LiteralPath $targetFile.FullName -Force -ErrorAction Stop;
+            }
+        }
+
+    }
+
+    function Get-RelativePath
+    {
+        PARAM
+		(
+			[string] $Path
+			,
+			[string] $RelativeTo 
+		)
+        return $Path -replace "^$([regex]::Escape($RelativeTo))\\?"
+    }
+
+    function Get-FileHash
+    {
+        PARAM
+		(
+			[string] $Path
+		)
+
+        if (-not (Test-Path -LiteralPath $Path -PathType Leaf))
+        {
+            return $null;
+        }
+
+        $item = Get-Item -LiteralPath $Path;
+        if ($item -isnot [System.IO.FileSystemInfo])
+        {
+            return $null;
+        }
+
+        $stream = $null;
+
+        try
+        {
+            $sha = New-Object System.Security.Cryptography.SHA256CryptoServiceProvider;
+            $stream = $item.OpenRead();
+            $bytes = $sha.ComputeHash($stream);
+            return [convert]::ToBase64String($bytes);
+        }
+        finally
+        {
+            if ($null -ne $stream) { $stream.Close() };
+            if ($null -ne $sha)    { $sha.Clear() };
+        }
+    }
 }
-
-<##
- #
- #
- # Copyright 2012-2015 Ronald Rink, d-fens GmbH
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- #
- # http://www.apache.org/licenses/LICENSE-2.0
- #
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #>
 
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU2ZtMH7qE0RJ2H80wvIxjRbmS
-# QyOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUwTVm9G1K20oawJBEDJg5iR8E
+# pUOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -233,26 +266,26 @@ HelpInfoURI = 'http://dfch.biz/biz/dfch/PS/System/Logging/'
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQjE5frTAmlV6CD
-# LhTPdre9PYzpljANBgkqhkiG9w0BAQEFAASCAQBoV+0C60sJvO+HOLebVrLwOxjg
-# Nx0xlNQ5lzjq3KL+rp/QewZ8ETKyq3z0KkJ1bfri+6QZmm5GhQ8vIdSfEh0uMSUq
-# NrpQ15I+zRNL6zPOejN1cEpiPEyku19mPXlRNBzqsHvpOysPIE1PbkWkVBr2pgEM
-# QQTZfFpEKK1DuHaCVDlDbAXApaN2PPPvnbo7NEc1XNyHFYhnFMPWjAEg8pPu8Yo8
-# lbK8wq85+1iZq20ahmqCuXRSTWeIZE4isHXuJiPg431xqELmSJfgo0B6b+jRLhGw
-# JOp2MEQatXTzA9VgN/XGsa4SlBQPZKbmpwk9mbe0SOg4dsGCfF6tDuo4RVidoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQmd5xQjBzniOki
+# tEDKGgkrUf11ADANBgkqhkiG9w0BAQEFAASCAQAsqPalLhAFXxwLsFgARNXaCIuO
+# Id1TXxKF9le2fIICQ6tWjrDwtCxJkp3BeR2/V1PMi9PZULKiuY4EAC+duub2P96h
+# eDFXTm0LMpRH41lnpmOf0NOFBMAR3fuPAbnjlX4BrM5IsFHLVSA3LQJoWDKCPLFS
+# xK9GX+ENqiAEV57FO+VCLMkOE0XuDBIc0pYxFdYUEXVI8/J1XhTWTy8k/zadLPiH
+# 97lv0I7MlhIdEvlG4Q1mkhe+ZYNZslt7k+RZuDFlVw0oCm8g0s/A5Qk6P586RWis
+# N9pxFMm5dzrLaMZycnd+oBN3owgWsbona0vx/i0E9XdE1UDpxnzgikaZvAYGoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MDcwOTA5MTE1NFowIwYJKoZIhvcNAQkEMRYEFDixGYK85sADifwkPgpKHpEfA3B5
+# MDcwOTA5MTE1NlowIwYJKoZIhvcNAQkEMRYEFCG4yFYFTtsxXBuZEKTGGJLjqY4Z
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQACVfsKV4G8WK4aQQcH
-# Hm5R9ld79YkRBY9PnXqBNl2LTHYjVo3Zdz+4Kq6FHhn5vLeFynZiUO9a7BtMxuQy
-# 2h+JAjX/sPnPzI2o8NBYvGzD8R4vC9UqOVLiABSfqpNaAkhxUnMt/FxVbs1x41nE
-# URjmSClXvIoAZHBnc4cQq6+E6669gqagz3l3BHRtDr+mI0Z44KD1gu94jNTjqIk1
-# wLbT14yA1ffodZunoy6SJkaG7d5a1c7JwQcEMzl8syiVFXpCkyby0CbxFSOdPQDX
-# +z/1jL4m4bP866dBL5sZHtUuiLMQVWCoEoOAqi3r0kSol9uIqIjBVMUJE2uukhWn
-# V3fv
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQCX4logdnSifaQHRe14
+# gGty42iMEIYTQX0KAq/116IG10DlPAlIVIf6Ru7KbtvfEsY2UJJUAvviS8Rxa/+Q
+# bRMnghJ3ZPqMuoYkjTeGfcYqLCZxug+ahQHk39CDkI/tpiyvLlyoCxolVg4DwsFO
+# L3APPOUMEjdB+mcZaDy7Y1v2+/H1hirPx3Ni1FzZqgCjvFtASboGNi0FP59ukpqH
+# OMM9YQPd+LOnVH4UG7DcIaJVNZsG/jTMdSfq2ajkM3o1knOOnx+8k2j6dOLI/NmY
+# CyOD8GzXaELDkirMHmlvwRzPWXqiSnCiNzK1wzrMNfFwNoncCBcRpYUMdbd75HQu
+# hgNb
 # SIG # End signature block
