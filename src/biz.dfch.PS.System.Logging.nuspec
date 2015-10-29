@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>biz.dfch.PS.System.Logging</id>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
         <title>biz.dfch.PS.System.Logging</title>
         <authors>d-fens GmbH</authors>
         <owners>Ronald Rink</owners>
@@ -31,27 +31,24 @@ This PowerShell module contains Cmdlets that allow to perform logging from your 
 
 See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for more information.</description>
         <summary>This PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.</summary>
-        <releaseNotes>20150326
-* Added installer - run install.ps1 to copy the module to a PowerShell module path directory</releaseNotes>
+        <releaseNotes>20151029
+* Fixed installer - run install.ps1 to copy the module to a PowerShell module path directory</releaseNotes>
         <copyright>(c) 2012-2015 d-fens GmbH</copyright>
         <language>en-US</language>
         <tags>dfch PowerShell Logging log4net</tags>
     </metadata>
     <files>
-        <file src="LICENSE" target="content\LICENSE" />
-        <file src="NOTICE" target="content\NOTICE" />
-        <file src="README.md" target="content\README.md" />
+        <file src="install.ps1" target="install.ps1" />
+        <file src="..\LICENSE" target="tools\LICENSE" />
+        <file src="..\NOTICE" target="tools\NOTICE" />
+        <file src="..\README.md" target="tools\README.md" />
         <file src="biz.dfch.PS.System.Logging.psd1" target="tools\biz.dfch.PS.System.Logging.psd1" />
         <file src="biz.dfch.PS.System.Logging.psm1" target="tools\biz.dfch.PS.System.Logging.psm1" />
         <file src="biz.dfch.PS.System.Logging.xml" target="tools\biz.dfch.PS.System.Logging.xml" />
         <file src="Import-Module.ps1" target="tools\Import-Module.ps1" />
-        <file src="LICENSE" target="tools\LICENSE" />
         <file src="log4net.dll" target="tools\log4net.dll" />
         <file src="log4net.xml" target="tools\log4net.xml" />
         <file src="Log4netConfiguration.xml" target="tools\Log4netConfiguration.xml" />
-        <file src="NOTICE" target="tools\NOTICE" />
         <file src="Out-Message.ps1" target="tools\Out-Message.ps1" />
-        <file src="README.md" target="tools\README.md" />
-        <file src="install.ps1" target="install.ps1" />
     </files>
 </package>
