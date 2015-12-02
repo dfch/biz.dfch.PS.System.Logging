@@ -1,6 +1,11 @@
 biz.dfch.PS.System.Logging
 ==========================
 
+[![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/dfensgmbh/biz.dfch.PS.System.Logging/blob/master/LICENSE)
+![NuGet downloads](https://img.shields.io/nuget/dt/biz.dfch.PS.System.Logging.svg)
+![Version](https://img.shields.io/nuget/v/biz.dfch.PS.System.Logging.svg)
+
+
 Modules: biz.dfch.PS.System.Logging
 
 d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
