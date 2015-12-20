@@ -45,6 +45,7 @@ See module manifest for dependencies and further requirements.
 )]
 PARAM
 (
+	# Specifies the error record to be logged
 	[Parameter(Mandatory = $true, Position = 0)]
 	[System.Management.Automation.ErrorRecord] $ErrorRecord
 )
