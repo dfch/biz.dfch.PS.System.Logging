@@ -65,9 +65,9 @@ ScriptsToProcess = @(
 NestedModules = @(
 	'Out-Message.ps1'
 	,
-	'Out-MessageException'
+	'Out-MessageException.ps1'
 	,
-	'Assert-IsTrue'
+	'Assert-IsTrue.ps1'
 )
 
 # Functions to export from this module

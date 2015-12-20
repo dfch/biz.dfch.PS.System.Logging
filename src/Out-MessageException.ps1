@@ -68,7 +68,7 @@ PARAM
 	}
 	
 	[string] $ErrorText = $sb.ToString();
-	$sb.Clear();
+	$null = $sb.Clear();
 	$sb = $null;
 	
 	Log-Error $fn $ErrorText -fac 3;
