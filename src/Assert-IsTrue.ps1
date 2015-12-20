@@ -141,10 +141,6 @@ PARAM
 		$msg = $callStack[0].InvocationInfo.Line.Replace($InvocationName, 'Condition failed:').Trim().TrimEnd(';');
 		$category = 'NotSpecified';
 	}
-	if($Message)
-	{
-		$msg = [string]::Concat($msg, "; ", $Message);
-	}
 	
 	Write-Warning ('{0}: {1}' -f $callStack[1].InvocationInfo.InvocationName, $msg);
 	$errorRecord = New-CustomErrorRecord -msg $msg -cat $category -o $callStack[0].InvocationInfo.Line -id $InvocationName;
