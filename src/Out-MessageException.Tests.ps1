@@ -232,6 +232,33 @@ Describe -Tags "Out-MessageException" "Out-MessageException" {
 		}
 	}
 	
+	Context "Out-MessageExceptionWithInnerException" {
+	
+		It "Warmup" -Test {
+			$true | Should Be $true;
+		}
+		
+		It "Out-MessageExceptionWithInnerException" -Test {
+		
+			# Arrange
+			Mock Out-MessageError { } -Verifiable;
+			try
+			{
+				$exInner = New-Object System.Exception("arbitrary-inner-exception");
+				$ex = New-Object System.Exception("arbitrary-main-exception", $exInner);
+				throw $ex;
+			}
+			catch
+			{
+				$errorRecord = $_;
+				Out-MessageException $errorRecord;
+			}
+			
+			# Assert
+			Assert-MockCalled Out-MessageError -Times 1;
+		}
+	}
+
 	Context "Out-MessageExceptionWithGotoSuccess" {
 	
 		# Context wide constants

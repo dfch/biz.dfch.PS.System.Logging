@@ -68,6 +68,7 @@ PARAM
 	{
 		$null = $sb.Append(("`r`n[###InnerException###] '{0}' [{1}]" -f $innerEx.Message, $innerEx.GetType()));
 		$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $innerEx)));
+		$innerEx = $innerEx.InnerException;
 	}
 	
 	[string] $ErrorText = $sb.ToString();
