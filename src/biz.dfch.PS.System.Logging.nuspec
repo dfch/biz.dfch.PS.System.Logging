@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>biz.dfch.PS.System.Logging</id>
-        <version>1.0.6</version>
+        <version>1.1.0</version>
         <title>biz.dfch.PS.System.Logging</title>
         <authors>d-fens GmbH</authors>
         <owners>Ronald Rink</owners>
@@ -31,8 +31,12 @@ This PowerShell module contains Cmdlets that allow to perform logging from your 
 
 See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for more information.</description>
         <summary>This PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.</summary>
-        <releaseNotes>20151029
-* Fixed installer - run install.ps1 to copy the module to a PowerShell module path directory</releaseNotes>
+        <releaseNotes>20151220
+* added Assert-IsTrue Cmdlet with Contract-Requires and Contract-Assert aliases for improved parameter validation
+* added streamlined Out-MessageException Cmdlet to facilitate exception logging
+* added skeleton for Cmdlet exception handling via trap handlers to facilitate exception handling
+
+* run install.ps1 to copy the module to a PowerShell module path directory</releaseNotes>
         <copyright>(c) 2012-2015 d-fens GmbH</copyright>
         <language>en-US</language>
         <tags>dfch PowerShell Logging log4net</tags>
@@ -50,5 +54,7 @@ See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki
         <file src="log4net.xml" target="tools\log4net.xml" />
         <file src="Log4netConfiguration.xml" target="tools\Log4netConfiguration.xml" />
         <file src="Out-Message.ps1" target="tools\Out-Message.ps1" />
+        <file src="Out-MessageException.ps1" target="tools\Out-MessageException.ps1" />
+        <file src="Assert-IsTrue.ps1" target="tools\Assert-IsTrue.ps1" />
     </files>
 </package>
