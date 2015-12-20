@@ -10,15 +10,19 @@ Set-Variable gotoNotFound -Option 'Constant' -Value 'biz.dfch.System.Exception.g
 [string] $ModuleConfigFile = '{0}.xml' -f (Get-Item $PSCommandPath).BaseName;
 [string] $ModuleConfigurationPathAndFile = Join-Path -Path $PSScriptRoot -ChildPath $ModuleConfigFile;
 $mvar = $ModuleConfigFile.Replace('.xml', '').Replace('.', '_');
-if($true -eq (Test-Path -Path $ModuleConfigurationPathAndFile)) {
-	if($true -ne (Test-Path variable:$($mvar))) {
+if((Test-Path -Path $ModuleConfigurationPathAndFile))
+{
+	if(!(Test-Path variable:$($mvar))) 
+	{
 		Set-Variable -Name $mvar -Value (Import-Clixml -Path $ModuleConfigurationPathAndFile);
-	} # if()
-} # if()
-if($true -ne (Test-Path variable:$($mvar))) {
+	}
+}
+if(!(Test-Path variable:$($mvar))) 
+{
 	Write-Error "Could not find module configuration file '$ModuleConfigFile' in 'ENV:PSModulePath'.`nAborting module import...";
-	break; # Aborts loading module.
-} # if()
+	# abort loading module
+	break; 
+}
 Export-ModuleMember -Variable $mvar;
 
 [string] $ManifestFile = '{0}.psd1' -f (Get-Item $PSCommandPath).BaseName;
@@ -36,9 +40,6 @@ if( Test-Path -Path $ManifestPathAndFile)
 	}
 }
 
-# $mvar.Log4NetPathAndFileFile = Join-Path -Path $ModuleDirectoryBase -ChildPath "log4net.dll";
-# Add-Type -Path $mvar.Log4NetPathAndFileFile;
-# $mvar.Log4NetConfigurationFile = Join-Path -Path $ModuleDirectoryBase -ChildPath $mvar.Log4NetConfigurationFile;
 [log4net.GlobalContext]::Properties["DirectoryBase"] = (Get-Variable -Name $mvar).Value.DirectoryBase
 $datNow = [datetime]::Now;
 [log4net.GlobalContext]::Properties["FileFormat"] = $datNow.ToString((Get-Variable -Name $mvar).Value.DirectoryFormat);
