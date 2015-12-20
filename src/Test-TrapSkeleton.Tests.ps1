@@ -1,38 +1,177 @@
-# Import-Module.ps1
-# 
-# Place any pre-initialisation script here
-# Note: 
-# * When executed the module is not yet loaded
-# * Everything you define here (e.g. a variable) is defined OUTSIDE the module scope.
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 
-# If this script is loaded via "ScriptsToProcess" it will incorrectly 
-# show up as loaded module, see the bug on Microsoft Connect below: 
-# https://connect.microsoft.com/PowerShell/feedback/details/903654/scripts-loaded-via-a-scriptstoprocess-attribute-in-a-module-manifest-appear-as-if-they-are-loaded-modules
+Set-Variable gotoSuccess -Option 'Constant' -Value 'biz.dfch.System.Exception.gotoSuccess';
+Set-Variable gotoError -Option 'Constant' -Value 'biz.dfch.System.Exception.gotoError';
+Set-Variable gotoFailure -Option 'Constant' -Value 'biz.dfch.System.Exception.gotoFailure';
 
-<##
- #
- #
- # Copyright 2015 d-fens GmbH
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- #
- # http://www.apache.org/licenses/LICENSE-2.0
- #
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #>
+function Write-Warning {
+	return;
+}
+
+function Test-TrapSkeletonStringBuilder {
+PARAM
+(
+	[System.Management.Automation.ErrorRecord] $ErrorRecord
+)
+
+	if($gotoSuccess -eq $ErrorRecord.Exception.Message) 
+	{
+		$fReturn = $true;
+	} 
+	else 
+	{
+		
+		$callStack = Get-PSCallStack;
+		$fn = $callStack[1].Command;
+		$sb = New-Object System.Text.StringBuilder;
+		$null = $sb.Append(("[{0}] '{1}' [{2}]" -f $ErrorRecord.FullyQualifiedErrorId, $ErrorRecord.Exception.Message, $ErrorRecord.Exception.GetType()));
+		$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $ErrorRecord.Exception)));
+		$null = $sb.Append((Out-String -InputObject (Format-Table -AutoSize -Property Location,Command,Arguments -InputObject (Get-PSCallStack))));
+		[string] $ErrorText = $sb.ToString();
+		$sb.Clear();
+		$sb = $null;
+		
+		if($ErrorRecord.Exception -is [System.Net.WebException]) 
+		{
+			Log-Critical $fn ("[WebException] Request FAILED with Status '{0}'. [{1}]." -f $ErrorRecord.Exception.Status, $ErrorRecord);
+			Log-Debug $fn $ErrorText -fac 3;
+		} 
+		else 
+		{
+			Log-Error $fn $ErrorText -fac 3;
+			if($gotoError -eq $ErrorRecord.Exception.Message) 
+			{
+				Log-Error $fn $e.Exception.Message;
+				$PSCmdlet.ThrowTerminatingError($e);
+			} 
+			elseif($gotoFailure -ne $ErrorRecord.Exception.Message) 
+			{ 
+				Write-Verbose ("$fn`n$ErrorText"); 
+			} 
+			else 
+			{
+				# N/A
+			}
+		} 
+		$fReturn = $false;
+		$OutputParameter = $null;
+	} 
+}
+
+Describe -Tags "Test-TrapSkeleton" "Test-TrapSkeleton" {
+
+	Mock Export-ModuleMember { return $null; }
+	
+	. "$here\$sut"
+	. "$here\Assert-IsTrue.ps1"
+	. "$here\Out-MessageException.ps1"
+	
+	BeforeEach {
+		# N/A
+	}
+
+	Context "Test-TrapSkeleton" {
+	
+		# Context wide constants
+		# N/A
+
+		It "Warmup" -Test {
+			$true | Should Be $true;
+		}
+		
+		It "Test-TrapSkeletonExceptionInBeginShouldThrow" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'Begin';
+			
+			# Act
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn; } | Should Throw "Exception in $ThrowExceptionIn";
+
+			# Assert
+			$result | Should Be $null;
+		}
+
+		It "Test-TrapSkeletonExceptionInProcessShouldThrow" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'Process';
+			
+			# Act
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn; } | Should Throw "Exception in $ThrowExceptionIn";
+
+			# Assert
+			$result | Should Be $null;
+		}
+
+		It "Test-TrapSkeletonExceptionInEndShouldThrow" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'End';
+			
+			# Act
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn; } | Should Throw "Exception in $ThrowExceptionIn";
+
+			# Assert
+			$result | Should Be $null;
+		}
+
+		It "Test-TrapSkeletonExceptionInNoneShouldReturnTrue" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'None';
+
+			# Act
+			$result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn;
+
+			# Assert
+			$result | Should Be $true;
+		}
+
+		It "Test-TrapSkeletonWithContractRequiresShouldThrow" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'ContractRequires';
+
+			# Act
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn ; } | Should Throw 'Precondition failed';
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn -TestParameterForContractRequires 5; } | Should Throw 'Precondition failed';
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn -TestParameterForContractRequires "  "; } | Should Throw 'Precondition failed';
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn -TestParameterForContractRequires "string-with-too-many-characters"; } | Should Throw 'Precondition failed';
+
+			# Assert
+			$result | Should Be $null;
+		}
+
+		It "Test-TrapSkeletonWithContractAssertShouldThrow" -Test {
+			# Arrange
+			$ThrowExceptionIn = 'ContractAssert';
+
+			# Act
+			{ $result = Test-TrapSkeleton -ThrowExceptionIn $ThrowExceptionIn; } | Should Throw 'Assertion failed';
+
+			# Assert
+			$result | Should Be $null;
+		}
+	}
+}
+
+#
+# Copyright 2015 d-fens GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUx9ZQru3MrJN6/Ny7fpP29Whx
-# EyOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFqdD0enrAUftbSG4yI/Jjofp
+# ZgmgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -131,26 +270,26 @@
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRlRCUodaQscPW0
-# G+p+XZ/36gVWGjANBgkqhkiG9w0BAQEFAASCAQCcmmtmq+UNUMz++1/ktAC2bmau
-# VziBlNPjfJfuMPrYUNewLNJpdoExkvBApcKKhOhFGAYVJBNlJItgTMSfGV8m8pLC
-# MWB+H0ORvHn7FG1HY0SjFK1INFw5SiRhcweHSDaBe2AevrTBNxfguwmkDga9o1Lz
-# 65657e5NX57uTxc6TjyzLxJLjpa1Qmu5VmPU86Q/WLEdiAx4gBxI7IR7/q3FtUxg
-# gq4Dszf8vVm0Yh/5olkS3Wv9BfgKlizmlE+j+WtZwit2jaY8c2XnuYaXPbyyd2xw
-# tsRDOI9o/NO5gJ5zy10TP8mfSql8lHOLqtXCBB+d7Y3d4Y9cgF6t4zhD/d0noYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTZMikFmVeB3KXl
+# EcUOMhj32KLS9jANBgkqhkiG9w0BAQEFAASCAQCPaBEDUJTrw0PlLo7c2cFJrK+k
+# poSee1xCne79G3Em2++6FXIRg4XOafMDjvqxph7/lzhgxridhVweVuLqOUQRPBQi
+# rKXGAu6IlXhx9tHyMA3o+OX7hnrumbRVnp/wVGx/jiF4cefoWpmdEnHYoEgEhI2e
+# slIAEOydhCHSTE9ZJcRuHGuis8hcuy/EnyjWDIN7LosCBGi1GrWANIzOQoooBpmz
+# GvcjR2D5EUBCVc+F3WiCi+wTuMwnxGC9oy+n6EkxqAupjlOYFJmn6+5eMwsQGf3h
+# YSuLaeRbuVbLMXh+T+FbpqOX/FAXsZ28ENQa3zhFK6MIc9l5QncGE4q1NADaoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFGRUy5kcZYzMhX2ZW8yhqgDETKr8
+# MTIyMDE0MzYwNlowIwYJKoZIhvcNAQkEMRYEFCiS3JmhjycZaRqfEIBstMG5cAdY
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQACHIXA9RJYTC3exQPI
-# za32fmHtzx0S1hGu3YWMCL5ZqJJaOcFr3dhPdAQ1riY+oEFJ9/ZsChEaCk3Qs/oY
-# hs3paZf+tXTfT7HOrgJlZH1W5uz1fXFxbXjMi0OAitnRJV1AkIszGtO7fTdT4ic6
-# dr/1CotOeTR/w6RgLxv/VNzwiQZk9SKrGH8za4/K/XAGrz/Q4zJ3xu7+6wXVHIMU
-# D+ew+dXFOskOlflwCdRiC+hl1wmJinJYO3NDvKyNYUHB9k8HbAVhmhjuLvOAQKdj
-# GWvRNwDzzH5R2STC/nFa32oVmUWAP+J63fs8Lo4K71NumZVqnyjqt+4ip+aaWJoI
-# fEnb
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBRMt/SD0WFsmeNc60z
+# UQwTrks5ONkta3raU8o8TgMsxp36m5ofPlK6PlZSsl4btBzqIYY5zoEx+CuPQu9A
+# 63Xp8j5krv3NHccL7WNmV51uj+3cydpFp8wUgf2IZMNi6TMZMDV8CAwjTa67w5f9
+# wDf68HfnBhqyAuCB0yM/gl2Tkc4WIcOATPylS2VUitZ6tq7EvLfweRO8h+A/ncAU
+# ANoTMtiPTjkm63m6qDoqGEfTJ5RuylUXxVYu0EyyiqN6Yg/WrrxEIJY/RiiqEljV
+# otm91KFIVU1mlJ2G9CgWgGH+8U5TTL0bnz+AT+N7eh64Spo1vJk/HI1zK1SLTNdL
+# 2F+X
 # SIG # End signature block

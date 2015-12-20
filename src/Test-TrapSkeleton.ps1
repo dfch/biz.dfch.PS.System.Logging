@@ -1,38 +1,100 @@
-# Import-Module.ps1
-# 
-# Place any pre-initialisation script here
-# Note: 
-# * When executed the module is not yet loaded
-# * Everything you define here (e.g. a variable) is defined OUTSIDE the module scope.
+function Test-TrapSkeleton {
+<#
+.SYNOPSIS
+This function defines a skeleton with TRAP statements as a generic exception handler.
+#>
+PARAM
+(
+	# magic input parameter to select where to throw exception
+	[Parameter(Mandatory = $true, Position = 0)]
+	[ValidateSet('Begin', 'Process', 'End', 'ContractRequires', 'ContractAssert', 'None')]
+	[string] $ThrowExceptionIn
+	,
+	[Object] $TestParameterForContractRequires
+)
 
-# If this script is loaded via "ScriptsToProcess" it will incorrectly 
-# show up as loaded module, see the bug on Microsoft Connect below: 
-# https://connect.microsoft.com/PowerShell/feedback/details/903654/scripts-loaded-via-a-scriptstoprocess-attribute-in-a-module-manifest-appear-as-if-they-are-loaded-modules
+Begin
+{
+	trap { Out-MessageException $_; break; };
+	
+	$fReturn = $false;
+	$OutputParameter = $null;
 
-<##
- #
- #
- # Copyright 2015 d-fens GmbH
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- #
- # http://www.apache.org/licenses/LICENSE-2.0
- #
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #>
+	# Do-Something
+
+	if($ThrowExceptionIn -eq 'Begin')
+	{
+		throw New-Object System.Exception("Exception in $ThrowExceptionIn");
+	}
+}
+
+Process
+{
+	trap { Out-MessageException $_; break; };
+
+	if($ThrowExceptionIn -eq 'Process')
+	{
+		throw (New-Object System.Exception("Exception in $ThrowExceptionIn"));
+	}
+	
+	# Do-Something
+
+	if($ThrowExceptionIn -eq 'ContractAssert')
+	{
+		$a = 1;
+		$b = 4;
+		Contract-Assert ($a -eq $b);
+	}
+	
+	if($ThrowExceptionIn -eq 'ContractRequires')
+	{
+		Contract-Requires ($null -ne $TestParameterForContractRequires);
+		Contract-Requires ($TestParameterForContractRequires -is [string]);
+		Contract-Requires (![string]::IsNullOrWhitespace($TestParameterForContractRequires));
+		Contract-Requires (5 -lt $TestParameterForContractRequires.Count);
+	}
+	
+	$fReturn = $true;
+}
+
+End
+{
+	trap { Out-MessageException $_; break; };
+
+	# Do-Something
+
+	if($ThrowExceptionIn -eq 'End')
+	{
+		throw (New-Object System.Exception("Exception in $ThrowExceptionIn"));
+	}
+	
+	$OutputParameter = $fReturn;
+	return $OutputParameter;
+}
+
+} # function
+
+#
+# Copyright 2012-2015 d-fens GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUx9ZQru3MrJN6/Ny7fpP29Whx
-# EyOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3u5oDwapz/s/yYblltf7pENp
+# wwagghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -131,26 +193,26 @@
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRlRCUodaQscPW0
-# G+p+XZ/36gVWGjANBgkqhkiG9w0BAQEFAASCAQCcmmtmq+UNUMz++1/ktAC2bmau
-# VziBlNPjfJfuMPrYUNewLNJpdoExkvBApcKKhOhFGAYVJBNlJItgTMSfGV8m8pLC
-# MWB+H0ORvHn7FG1HY0SjFK1INFw5SiRhcweHSDaBe2AevrTBNxfguwmkDga9o1Lz
-# 65657e5NX57uTxc6TjyzLxJLjpa1Qmu5VmPU86Q/WLEdiAx4gBxI7IR7/q3FtUxg
-# gq4Dszf8vVm0Yh/5olkS3Wv9BfgKlizmlE+j+WtZwit2jaY8c2XnuYaXPbyyd2xw
-# tsRDOI9o/NO5gJ5zy10TP8mfSql8lHOLqtXCBB+d7Y3d4Y9cgF6t4zhD/d0noYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRobuGXSKIXMbhb
+# AKbA/+6jL2bnaDANBgkqhkiG9w0BAQEFAASCAQBWxONmP9ygwcyg0GNfDmlj7i1D
+# G6E5SrU2ROEunkusy4HXW/9PlZ1wCRb75Q9m2yLi1xseLfg/mfBdAVrTGmQYp2Nk
+# hlhy0u7wCEhCTckqdQczK/24IoaBMDewpxaMxEU3vnw1jI3syOPbPgfTwLMfrvda
+# H/E/bk847q9ITg2AWqKPo87Cj3Y83175gBHHrT6cf0Ao4jd70D752ZT1+iFFE0T4
+# NtVlqLJnah84aoeDLtPRwQFS7ZhV7dyUJ2+urkK8NDlSbpiWWBby0988hd+y60II
+# kYFy4u+8+WY60ni8v+F3C2DJ7u31vLerC5L4+O5ZOQmUp1oeEhLvV3/5tPFioYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFGRUy5kcZYzMhX2ZW8yhqgDETKr8
+# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFHF4Bu4KeKWU2aBDj/SqbTaCR2do
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQACHIXA9RJYTC3exQPI
-# za32fmHtzx0S1hGu3YWMCL5ZqJJaOcFr3dhPdAQ1riY+oEFJ9/ZsChEaCk3Qs/oY
-# hs3paZf+tXTfT7HOrgJlZH1W5uz1fXFxbXjMi0OAitnRJV1AkIszGtO7fTdT4ic6
-# dr/1CotOeTR/w6RgLxv/VNzwiQZk9SKrGH8za4/K/XAGrz/Q4zJ3xu7+6wXVHIMU
-# D+ew+dXFOskOlflwCdRiC+hl1wmJinJYO3NDvKyNYUHB9k8HbAVhmhjuLvOAQKdj
-# GWvRNwDzzH5R2STC/nFa32oVmUWAP+J63fs8Lo4K71NumZVqnyjqt+4ip+aaWJoI
-# fEnb
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQAUYvZalRMUs/rOx3Ff
+# i9nKmWaxRMg1us76A5uwO1jmsmWB7DablNke8od17xAVZoTNH8GQa7NxmVFrbCYB
+# /p6OrKoydecWiNoJV3CBsxedUngRiKuodT7g4+TUmI2epDfpfkYmR8Z2CiHQ/wQz
+# fQ8OVKI0POCZfkdFtzxk2+GM45akQeqDjkZ6QmvIoWf5C6neKeKqOjQBQ1nyOjOw
+# nBz42fwam8WMYmzMiHiJQKpvPCuzxTvKtR3P2xapdPFPPzQdXMG+FSEPuM5fIKtd
+# e+HJMPtiYlrbwLL9oVQWa7G2nmfnqmmMHqRDE4yT/UOUu89V0er7XEQ9r8eAJ37l
+# KF4C
 # SIG # End signature block

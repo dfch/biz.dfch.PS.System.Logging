@@ -10,15 +10,19 @@ Set-Variable gotoNotFound -Option 'Constant' -Value 'biz.dfch.System.Exception.g
 [string] $ModuleConfigFile = '{0}.xml' -f (Get-Item $PSCommandPath).BaseName;
 [string] $ModuleConfigurationPathAndFile = Join-Path -Path $PSScriptRoot -ChildPath $ModuleConfigFile;
 $mvar = $ModuleConfigFile.Replace('.xml', '').Replace('.', '_');
-if($true -eq (Test-Path -Path $ModuleConfigurationPathAndFile)) {
-	if($true -ne (Test-Path variable:$($mvar))) {
+if((Test-Path -Path $ModuleConfigurationPathAndFile))
+{
+	if(!(Test-Path variable:$($mvar))) 
+	{
 		Set-Variable -Name $mvar -Value (Import-Clixml -Path $ModuleConfigurationPathAndFile);
-	} # if()
-} # if()
-if($true -ne (Test-Path variable:$($mvar))) {
+	}
+}
+if(!(Test-Path variable:$($mvar))) 
+{
 	Write-Error "Could not find module configuration file '$ModuleConfigFile' in 'ENV:PSModulePath'.`nAborting module import...";
-	break; # Aborts loading module.
-} # if()
+	# abort loading module
+	break; 
+}
 Export-ModuleMember -Variable $mvar;
 
 [string] $ManifestFile = '{0}.psd1' -f (Get-Item $PSCommandPath).BaseName;
@@ -36,9 +40,6 @@ if( Test-Path -Path $ManifestPathAndFile)
 	}
 }
 
-# $mvar.Log4NetPathAndFileFile = Join-Path -Path $ModuleDirectoryBase -ChildPath "log4net.dll";
-# Add-Type -Path $mvar.Log4NetPathAndFileFile;
-# $mvar.Log4NetConfigurationFile = Join-Path -Path $ModuleDirectoryBase -ChildPath $mvar.Log4NetConfigurationFile;
 [log4net.GlobalContext]::Properties["DirectoryBase"] = (Get-Variable -Name $mvar).Value.DirectoryBase
 $datNow = [datetime]::Now;
 [log4net.GlobalContext]::Properties["FileFormat"] = $datNow.ToString((Get-Variable -Name $mvar).Value.DirectoryFormat);
@@ -72,7 +73,7 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 <##
  #
  #
- # Copyright 2015 Ronald Rink, d-fens GmbH
+ # Copyright 2015 d-fens GmbH
  #
  # Licensed under the Apache License, Version 2.0 (the "License");
  # you may not use this file except in compliance with the License.
@@ -91,8 +92,8 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUUfRcswkyM6WpFoSY5EZsDRSI
-# VRugghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFCjv8Y5oidNE+838DhzJirWI
+# Q/igghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -191,26 +192,26 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTvzvsiyGfrAcjq
-# c8Ni0qrX7xWR0DANBgkqhkiG9w0BAQEFAASCAQBpcrjVCIapbB10VfFG1oynlN7Q
-# kGMExlNZ4SwJff5pPmJgzs6AG8w6NlO+/7/oopC2DVndXpHRzqx4N970Aro82OAm
-# +0K2Omls6ZIt+qb5NoJAqFmCDt/92N5soLHxOqRbbPFFC/mazKisJk7TclP9NRKH
-# bGCKdHg7zaJ76D2e88UKSJAfRckHR0M9Q72ginD92B1nP8Du+CJBgVfsqIaIbTdc
-# rfsVYeUH9gGCueWzJKAiUVN1JD6knaBCniZ2yGN1gh4RSRWFlFzS1X3xdAB/wgtP
-# Z6tmpm+jm6v6hJdGZ4lKiDi4yVfYye9VYG5AWsPfwnsSNBH8MQMV23SP8lGMoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTlJpkEeApw4zBb
+# Jz6O43Rad5bW0DANBgkqhkiG9w0BAQEFAASCAQBeOyQ2lhYocMWsrfYGFEOlqqb5
+# +RBn9W51GG/Ixcp7Oo4rAbBcH8WaaDuE7D/crdWojmBo9lIcMjbgPxYDi6ypYyIf
+# 8r3Ubtr+1Nu2QK+ghDblOEkefhKQuu5qb+duQcKvlu7rlCDwIaM2mgkpk79Nv8+x
+# 5NFIDDuQpDMksXEz3tFVfR1j6ASMXMi5LP8w1X2UJZLI8BXa7TbOhDRPe6KlnZuo
+# Rqxy1nErnE7UPNU4xUBHcYP/3DqkddwOsYmQdov0IyrVcvFKnKr+xbYVMnBz0vtq
+# r6hVVgPaAAQO9+5Uoz+detPilDqJfSx23Pi4iTToLQevebunp77mixsglVSyoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MDcwOTA5MTE1NVowIwYJKoZIhvcNAQkEMRYEFF5WInpyQSV8hk+tUbpEqTu1YfKJ
+# MTIyMDE0MzgzM1owIwYJKoZIhvcNAQkEMRYEFNndXx45AWyePPbY+Hl0K+etR/zh
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBtFo8/kzccFtkppOfa
-# 8h625HnfzUsOH210AXrajqISEcwhVMCJ64pRmHhnUcL76hpPbkJDVC28iXdgKHuz
-# hWxpshELuHRWxKeuK2LbE+5tU49Vtg6D5SKMlzXZ1Q9hIbjNWd5sMpZKpjhUWB3o
-# TvgOYHJXy4imHnt0PwySQbHpuk+ECV+ZCSkINNQLYaoSFDbDgGCPfe8ZQZ30+ewP
-# L2p6hlGzlhWBnK4D1n0jgfIU0MG0XHlHEJ9ezAH3Kx2kLNmMaxj4q8AmEV3f82AH
-# MSgVWuw7V4S3usdELEwmAO36OXAZ6uxcDV1bOgaflMilmbOy+QZgm38H++kUNQaF
-# pTsd
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBCD9Xqaj+zifY6c3lL
+# BnoEA05K+p38wtQA6AbbHYCRy5olJpsFP8Un/sx0SkyqEeD03e0B3Vpfkfq3wOqq
+# OFhVbNoisBIOn3P0Y16mTxvyI2waRQcVpfNG2k99BSDIMtUagSOI0DGDkQ0zruWS
+# otmuCo7ljKz1GSIeVf1wXXEGGKBUO4Dm5pLJ3iLNATx9yy5G6GCs78n6qDfCjv/k
+# wdE8ZzoOMVhj+s/8Z6x9fycyQpa6o5w4vjgm0W8UIDvUYNWXp92cZe1c/oac1WD6
+# ED+Ls5Md9Y7Tq+auj671J6WtesuU95sqcuy35UcDE0h27BINQHjratJoXgGAcQ0q
+# /B9D
 # SIG # End signature block

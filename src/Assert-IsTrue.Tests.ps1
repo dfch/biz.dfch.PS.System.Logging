@@ -1,38 +1,117 @@
-# Import-Module.ps1
-# 
-# Place any pre-initialisation script here
-# Note: 
-# * When executed the module is not yet loaded
-# * Everything you define here (e.g. a variable) is defined OUTSIDE the module scope.
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 
-# If this script is loaded via "ScriptsToProcess" it will incorrectly 
-# show up as loaded module, see the bug on Microsoft Connect below: 
-# https://connect.microsoft.com/PowerShell/feedback/details/903654/scripts-loaded-via-a-scriptstoprocess-attribute-in-a-module-manifest-appear-as-if-they-are-loaded-modules
+function Write-Warning {
+	return;
+}
 
-<##
- #
- #
- # Copyright 2015 d-fens GmbH
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- #
- # http://www.apache.org/licenses/LICENSE-2.0
- #
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #>
+Describe -Tags "Assert-IsTrue" "Assert-IsTrue" {
+
+	Mock Export-ModuleMember { return $null; }
+	
+	. "$here\$sut"
+	
+	BeforeEach {
+		# N/A
+	}
+
+	Context "Assert-IsTrue" {
+	
+		# Context wide constants
+		# N/A
+
+		It "Warmup" -Test {
+			$true | Should Be $true;
+		}
+
+		It "Contract-AssertWithInvalidConditionShouldThrow" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Assert ( ![string]::IsNullOrWhiteSpace("    ") ); } | Should Throw 'Assertion failed';
+			
+			# Assert
+		}
+
+		It "Contract-AssertWithInvalidConditionAndMessageShouldThrow" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Assert ( ![string]::IsNullOrWhiteSpace("    ") ) "abitrary-message"; } | Should Throw 'Assertion failed';
+			
+			# Assert
+		}
+
+		It "Contract-AssertWithValidConditionShouldReturn" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Assert ( ![string]::IsNullOrWhiteSpace("arbitrary-string") ); } | Should Not Throw;
+			
+			# Assert
+		}
+
+		It "Contract-RequiresWithInvalidConditionShouldThrow" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Requires ( ![string]::IsNullOrWhiteSpace("    ") ); } | Should Throw 'Precondition failed';
+			
+			# Assert
+		}
+
+		It "Contract-RequiresWithInvalidConditionAndMessageShouldThrow" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Requires ( ![string]::IsNullOrWhiteSpace("    ") ) "abitrary-message"; } | Should Throw 'Precondition failed';
+			
+			# Assert
+		}
+
+		It "Contract-RequiresWithValidConditionShouldReturn" -Test {
+			# Arrange
+			
+			# Act
+			{ Contract-Requires ( ![string]::IsNullOrWhiteSpace("arbitrary-string") ); } | Should Not Throw;
+			
+			# Assert
+		}
+
+		It "Assert-ItTrueShouldReturnButShouldNotBeUsedDirectly" -Test {
+			# Arrange
+			Mock Write-Warning -Verifiable;
+			
+			# Act
+			{ $result = Assert-IsTrue (3 -eq 5); } | Should Throw 'Condition failed';
+			
+			# Assert
+			Assert-MockCalled Write-Warning -Times 2;
+		}
+	}
+}
+
+#
+# Copyright 2015 d-fens GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUx9ZQru3MrJN6/Ny7fpP29Whx
-# EyOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUDZatVLTS/AsxvuL/ZoNpKaEr
+# vt6gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -131,26 +210,26 @@
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRlRCUodaQscPW0
-# G+p+XZ/36gVWGjANBgkqhkiG9w0BAQEFAASCAQCcmmtmq+UNUMz++1/ktAC2bmau
-# VziBlNPjfJfuMPrYUNewLNJpdoExkvBApcKKhOhFGAYVJBNlJItgTMSfGV8m8pLC
-# MWB+H0ORvHn7FG1HY0SjFK1INFw5SiRhcweHSDaBe2AevrTBNxfguwmkDga9o1Lz
-# 65657e5NX57uTxc6TjyzLxJLjpa1Qmu5VmPU86Q/WLEdiAx4gBxI7IR7/q3FtUxg
-# gq4Dszf8vVm0Yh/5olkS3Wv9BfgKlizmlE+j+WtZwit2jaY8c2XnuYaXPbyyd2xw
-# tsRDOI9o/NO5gJ5zy10TP8mfSql8lHOLqtXCBB+d7Y3d4Y9cgF6t4zhD/d0noYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR8OJGzE4rx6I/g
+# 0zXZgOgWoE/RQTANBgkqhkiG9w0BAQEFAASCAQBMDWZK7cr+VrsNA2FNv23ImW9Y
+# o03xGnRzi0WmBqaNFvryI0mTK0eGm2S3flStC935uAX/5K3NUCcmKP52tbqC4vMo
+# Za0P9LwfdN/Rts9d4r1Hnh82HP/EOsgc2gg/ByDzru2GTcVQ8sN6xZVKy99DSbLx
+# rlJ5K1/Oas8fX/X1tW4h6Qfcnv8Eubd+2MZpwsVD2V6wmQV3Rhk+ieG+CO0N5MX4
+# 90XQwLotesr1ZphgZzJyXgnYYzOHomdSUZazSBcoxYWqSWo4kVv3xxzcPk47Mk2T
+# LKsT+NqhezY/dibM3/KTtw5lcahY0M7VUN8jclBuaRUO0lsGvWVmJLK6CbFioYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFGRUy5kcZYzMhX2ZW8yhqgDETKr8
+# MTIyMDE0MzU0N1owIwYJKoZIhvcNAQkEMRYEFD0i7JkyuVP0EXD73fzrWe+hdHPh
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQACHIXA9RJYTC3exQPI
-# za32fmHtzx0S1hGu3YWMCL5ZqJJaOcFr3dhPdAQ1riY+oEFJ9/ZsChEaCk3Qs/oY
-# hs3paZf+tXTfT7HOrgJlZH1W5uz1fXFxbXjMi0OAitnRJV1AkIszGtO7fTdT4ic6
-# dr/1CotOeTR/w6RgLxv/VNzwiQZk9SKrGH8za4/K/XAGrz/Q4zJ3xu7+6wXVHIMU
-# D+ew+dXFOskOlflwCdRiC+hl1wmJinJYO3NDvKyNYUHB9k8HbAVhmhjuLvOAQKdj
-# GWvRNwDzzH5R2STC/nFa32oVmUWAP+J63fs8Lo4K71NumZVqnyjqt+4ip+aaWJoI
-# fEnb
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBkrJDUcntDl/TIz8yd
+# Xwp2CMzTDAPBmHWPcHo6/Y7+sm+h3NWWjUOXOL+pDRWrMLKwqkoPhXJYxfbtPjw3
+# 84H1jzojH542yO6kkKuGnzIBKFL7Qq46UhTMd6n3cyhGH9qvREJB2kBR4gJrG78A
+# DvOgU9sAP3k9C4gKjusV2Z+XEHkcAWeGOKAEXgCVLZfyksACxvDWthN3d4PZQ0O4
+# YYJVEq6iUCWY/Qx8hjmTz07XqZEHPNFMeZ9ZNeUDWxwosoT/iKuhhWDenz4TZlvq
+# wHTi1ZRwjuzvFTRU10HGrX2Ehhgys3tCStO/7TRAaUH0gqCUAnDlIVzsBfd7mu5X
+# mXlp
 # SIG # End signature block

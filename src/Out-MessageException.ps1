@@ -1,38 +1,113 @@
-# Import-Module.ps1
-# 
-# Place any pre-initialisation script here
-# Note: 
-# * When executed the module is not yet loaded
-# * Everything you define here (e.g. a variable) is defined OUTSIDE the module scope.
+function Out-MessageException {
+<#
+.SYNOPSIS
+Writes an error record to a log target.
 
-# If this script is loaded via "ScriptsToProcess" it will incorrectly 
-# show up as loaded module, see the bug on Microsoft Connect below: 
-# https://connect.microsoft.com/PowerShell/feedback/details/903654/scripts-loaded-via-a-scriptstoprocess-attribute-in-a-module-manifest-appear-as-if-they-are-loaded-modules
+.DESCRIPTION
+Writes an error record to a log target.
 
-<##
- #
- #
- # Copyright 2015 d-fens GmbH
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- #
- # http://www.apache.org/licenses/LICENSE-2.0
- #
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #>
+This Cmdlet writes a complete ErrorRecord to a log target including the actual ErrorRecord, the exception and a stack trace. If the exception contains inner exceptions they will be written to the log target as well. Normally this Cmdlet will not be called directly but only inside a `trap` or `catch` block.
+
+.OUTPUTS
+The Cmdlet returns set `$fReturn` to `$true` and returns its value if the exception message of the ErrorRecord equals `$gotoSuccess`. No message is logged in this case. Otherwise the Cmdlet set `$fReturn` to `$false`, set `$OutputParameter` to `$null` and returns its value. If the exception message of the ErrorRecord equals `$gotoError` a terminating error is also generated.
+
+.EXAMPLE
+This example calls a method with a try/catch block. Upon exception a custom error record is created and written to the log via `Out-MessageException`.
+
+function Funcy($InputObject)
+{
+	# main function code goes here ...
+	
+	try
+	{
+		$result = Some-ArbitraryHelperCmdlet;
+	}
+	catch
+	{
+		$er = New-CustomErrorRecord -msg "arbitrary-message" -cat NotSpecified -o "arbitrary-object";
+		Out-MessageException $er;
+	}
+	
+	# some more processing ...
+}
+
+.LINK
+Online Version: http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageException/
+
+.NOTES
+See module manifest for dependencies and further requirements.
+
+#>
+[CmdletBinding(
+	HelpURI = 'http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageException/'
+)]
+PARAM
+(
+	[Parameter(Mandatory = $true, Position = 0)]
+	[System.Management.Automation.ErrorRecord] $ErrorRecord
+)
+
+	if($gotoSuccess -eq $ErrorRecord.Exception.Message) 
+	{
+		$fReturn = $true;
+		return $fReturn;
+	} 
+
+	$callStack = Get-PSCallStack;
+	$fn = $callStack[1].Command;
+	$sb = New-Object System.Text.StringBuilder;
+	$null = $sb.Append(("[{0}] '{1}' [{2}]" -f $ErrorRecord.FullyQualifiedErrorId, $ErrorRecord.Exception.Message, $ErrorRecord.Exception.GetType()));
+	$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $ErrorRecord.Exception)));
+	$null = $sb.Append((Out-String -InputObject (Format-Table -AutoSize -Property Location,Command,Arguments -InputObject (Get-PSCallStack))));
+
+	$innerEx = $ErrorRecord.Exception.InnerException;
+	while($innerEx)
+	{
+		$null = $sb.Append(("`r`n[###InnerException###] '{0}' [{1}]" -f $innerEx.Message, $innerEx.GetType()));
+		$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $innerEx)));
+	}
+	
+	[string] $ErrorText = $sb.ToString();
+	$sb.Clear();
+	$sb = $null;
+	
+	Log-Error $fn $ErrorText -fac 3;
+
+	$fReturn = $false;
+	$OutputParameter = $null;
+
+	if($gotoError -eq $ErrorRecord.Exception.Message) 
+	{
+		$PSCmdlet.ThrowTerminatingError($ErrorRecord);
+	} 
+	
+	return $fReturn;
+}
+
+Set-Alias -Name Log-Exception -Value Out-MessageException;
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageException -Alias 'Log-Exception'; } 
+
+#
+# Copyright 2015 d-fens GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUx9ZQru3MrJN6/Ny7fpP29Whx
-# EyOgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCWducKMnMH56H8M0p3Bvt0Gh
+# 266gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -131,26 +206,26 @@
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRlRCUodaQscPW0
-# G+p+XZ/36gVWGjANBgkqhkiG9w0BAQEFAASCAQCcmmtmq+UNUMz++1/ktAC2bmau
-# VziBlNPjfJfuMPrYUNewLNJpdoExkvBApcKKhOhFGAYVJBNlJItgTMSfGV8m8pLC
-# MWB+H0ORvHn7FG1HY0SjFK1INFw5SiRhcweHSDaBe2AevrTBNxfguwmkDga9o1Lz
-# 65657e5NX57uTxc6TjyzLxJLjpa1Qmu5VmPU86Q/WLEdiAx4gBxI7IR7/q3FtUxg
-# gq4Dszf8vVm0Yh/5olkS3Wv9BfgKlizmlE+j+WtZwit2jaY8c2XnuYaXPbyyd2xw
-# tsRDOI9o/NO5gJ5zy10TP8mfSql8lHOLqtXCBB+d7Y3d4Y9cgF6t4zhD/d0noYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1vbxpQlginoEj
+# DK8tgLf7iOWhVjANBgkqhkiG9w0BAQEFAASCAQCzI+VQ3HX/KnL3i0wvje43BVnC
+# H4jqY6jkkldL1w9aL+XxOUCAM1lOoOun/Wuh6Om6Pj4o+8lx0spnfhkKJJb/mRIG
+# 6z6RcQotRtsgbLpxBw4qXV/FQGq2aVW2/k895Ei8MTSnlDlJg0rc1vOkahP0MTzo
+# f5+Jz41xidRub8yifZi+mYZTBqlcwUcuTiwtQrLKh06VaJxm4S6M9I29mb3fErbF
+# BqxXgWnD4aBNH5Y4DYecR3MGLndl3TNuvBtLf6oI0bwXoL4MFOP4/7S2XLoBI2nu
+# ce2sP/ckgnwORA624toOS0B6Zh2Xq7yZb9OwU/gziDgjagHdON0HCkGCcChDoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFGRUy5kcZYzMhX2ZW8yhqgDETKr8
+# MTIyMDE0MzYxMlowIwYJKoZIhvcNAQkEMRYEFKDUrWtq32OmYkmOLZpvRLL6v+Hm
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQACHIXA9RJYTC3exQPI
-# za32fmHtzx0S1hGu3YWMCL5ZqJJaOcFr3dhPdAQ1riY+oEFJ9/ZsChEaCk3Qs/oY
-# hs3paZf+tXTfT7HOrgJlZH1W5uz1fXFxbXjMi0OAitnRJV1AkIszGtO7fTdT4ic6
-# dr/1CotOeTR/w6RgLxv/VNzwiQZk9SKrGH8za4/K/XAGrz/Q4zJ3xu7+6wXVHIMU
-# D+ew+dXFOskOlflwCdRiC+hl1wmJinJYO3NDvKyNYUHB9k8HbAVhmhjuLvOAQKdj
-# GWvRNwDzzH5R2STC/nFa32oVmUWAP+J63fs8Lo4K71NumZVqnyjqt+4ip+aaWJoI
-# fEnb
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQB/epj/MuZmnTLfgyBI
+# Pbfvatw0JkK9N8UrLEVSf7xvfXPg4X7oJgr5FP7INdW0KRWJdOsBAf8vOoUwgUzy
+# Tmw8/AZz4LvWuY+9jQWu2K2E3I5rfcctvR3ZdoLXlk3of1PMNbusUFx4FwxRrbrR
+# S4vuF7UXmVCynXLuHXF94ZWi4X6HdcfGFpiEFkbMkEeMxqg+YRenCs5YMh+uL51y
+# Co4Imdb4raHRtsaj18w9WDHa8NP9o94raSbnA75bS1c+hIALv3oZLnloGP8g+8t9
+# tuXEMjY2WeU1Vr7r/kQFbWRKVhritSmNPu2ZNabo2uRI2664dV3wRR4jo31K9yVQ
+# cJl4
 # SIG # End signature block
