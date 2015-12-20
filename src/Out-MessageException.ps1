@@ -8,8 +8,10 @@ Writes an error record to a log target.
 
 This Cmdlet writes a complete ErrorRecord to a log target including the actual ErrorRecord, the exception and a stack trace. If the exception contains inner exceptions they will be written to the log target as well. Normally this Cmdlet will not be called directly but only inside a `trap` or `catch` block.
 
+The Cmdlet sets `$fReturn` to `$true` and returns `$null` if the exception message of the ErrorRecord equals `$gotoSuccess`. No message is logged in this case. Otherwise the Cmdlet sets `$fReturn` to `$false`, sets `$OutputParameter` to `$null` and returns `$null`. If the exception message of the ErrorRecord equals `$gotoError` a terminating error is also generated.
+
 .OUTPUTS
-The Cmdlet returns set `$fReturn` to `$true` and returns its value if the exception message of the ErrorRecord equals `$gotoSuccess`. No message is logged in this case. Otherwise the Cmdlet set `$fReturn` to `$false`, set `$OutputParameter` to `$null` and returns its value. If the exception message of the ErrorRecord equals `$gotoError` a terminating error is also generated.
+This Cmdlet does not return a value.
 
 .EXAMPLE
 This example calls a method with a try/catch block. Upon exception a custom error record is created and written to the log via `Out-MessageException`.
@@ -50,7 +52,7 @@ PARAM
 	if($gotoSuccess -eq $ErrorRecord.Exception.Message) 
 	{
 		$fReturn = $true;
-		return $fReturn;
+		return $null;
 	} 
 
 	$callStack = Get-PSCallStack;
@@ -81,7 +83,7 @@ PARAM
 		$PSCmdlet.ThrowTerminatingError($ErrorRecord);
 	} 
 	
-	return $fReturn;
+	return $null;
 }
 
 Set-Alias -Name Log-Exception -Value Out-MessageException;
@@ -106,8 +108,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageExceptio
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCWducKMnMH56H8M0p3Bvt0Gh
-# 266gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZnzgLuIIS7OzkILQ6WW3ph+1
+# iNagghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -206,26 +208,26 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageExceptio
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1vbxpQlginoEj
-# DK8tgLf7iOWhVjANBgkqhkiG9w0BAQEFAASCAQCzI+VQ3HX/KnL3i0wvje43BVnC
-# H4jqY6jkkldL1w9aL+XxOUCAM1lOoOun/Wuh6Om6Pj4o+8lx0spnfhkKJJb/mRIG
-# 6z6RcQotRtsgbLpxBw4qXV/FQGq2aVW2/k895Ei8MTSnlDlJg0rc1vOkahP0MTzo
-# f5+Jz41xidRub8yifZi+mYZTBqlcwUcuTiwtQrLKh06VaJxm4S6M9I29mb3fErbF
-# BqxXgWnD4aBNH5Y4DYecR3MGLndl3TNuvBtLf6oI0bwXoL4MFOP4/7S2XLoBI2nu
-# ce2sP/ckgnwORA624toOS0B6Zh2Xq7yZb9OwU/gziDgjagHdON0HCkGCcChDoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT7vhMbifmyH7BE
+# e2gFJtjR4IFL3zANBgkqhkiG9w0BAQEFAASCAQC3Xw4bHv10Me2e1FvYWahtBMw9
+# qYniqAh3CUu9MwB9q8tAJpnj9YM8Hg0Qs4U9wd4Pyo90q2l9cONThrNQoIby5z3P
+# NHrLyu92JQLM0NQ1H9QtbM4BR6ijhpTT4APGgbkblGIUhgHwQluGIcDonvO3N3xc
+# IpMpA9pw9BgUXLgta/Fv39iDLgGuqhU4XUEtbbXheISqekRcSlCAfUW4Ii8NgJ57
+# HB63Kt2C/UjaIzqo49czHU4oF3I5HuXIeAWQu4i+8sI6HImTamV2VKKgbve8myGa
+# SFoMlLqvbjHHrPcbIsZYaeoRmk9/aZPkeSP9ZLlSspdgltHdEE60LwJfBnEkoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzYxMlowIwYJKoZIhvcNAQkEMRYEFKDUrWtq32OmYkmOLZpvRLL6v+Hm
+# MTIyMDE1MjI0M1owIwYJKoZIhvcNAQkEMRYEFDKpL/LFY8DaUHAUtpqMb9jxwbio
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQB/epj/MuZmnTLfgyBI
-# Pbfvatw0JkK9N8UrLEVSf7xvfXPg4X7oJgr5FP7INdW0KRWJdOsBAf8vOoUwgUzy
-# Tmw8/AZz4LvWuY+9jQWu2K2E3I5rfcctvR3ZdoLXlk3of1PMNbusUFx4FwxRrbrR
-# S4vuF7UXmVCynXLuHXF94ZWi4X6HdcfGFpiEFkbMkEeMxqg+YRenCs5YMh+uL51y
-# Co4Imdb4raHRtsaj18w9WDHa8NP9o94raSbnA75bS1c+hIALv3oZLnloGP8g+8t9
-# tuXEMjY2WeU1Vr7r/kQFbWRKVhritSmNPu2ZNabo2uRI2664dV3wRR4jo31K9yVQ
-# cJl4
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBPj2YGqq0DVHuON1t8
+# P6iZu9MkwbEB7IQg/aCl+OueL7deAfn86awj+ZwquWQDFADfXPAS7S1MbCUfDmuB
+# e9Gkbc598+wTOsoXsYH2Lba++CpDoVPfX2bfAiCUoxOkgLnbRbWfjnV+kVr4TJmU
+# VnuAUwGgKRQIh9BCZFveZP37A13CbQ2JQDYBvmhNYb2RJ5ocqE3srU0uvc5EuVk5
+# Rjf5nRCgA40ItSMwCdML+xSKnX+10uEJmQfSPWSVvi0MffzB/6KZH7ZQ8RDCetUX
+# onlBfly3L7xIbu4FKmT+Ws72SqeGz6mJjpTStybTQikSJDsL+AGPaTvYcWhJlLul
+# uB1C
 # SIG # End signature block
