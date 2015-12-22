@@ -60,7 +60,18 @@ PARAM
 	$fn = $callStack[1].Command;
 	$sb = New-Object System.Text.StringBuilder;
 	$null = $sb.Append(("[{0}] '{1}' [{2}]" -f $ErrorRecord.FullyQualifiedErrorId, $ErrorRecord.Exception.Message, $ErrorRecord.Exception.GetType()));
-	$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $ErrorRecord.Exception)));
+	try
+	{
+		$null = $sb.Append((Out-String -InputObject (fl -Property * -Force -InputObject $ErrorRecord.Exception)));
+	}
+	catch
+	{
+		$null = $sb.Append((Out-String -InputObject $ErrorRecord.Exception));
+		if($ErrorRecord.Exception.InnerException)
+		{
+			$null = $sb.Append((Out-String -InputObject $ErrorRecord.Exception.InnerException));
+		}
+	}
 	$null = $sb.Append((Out-String -InputObject (Format-Table -AutoSize -Property Location,Command,Arguments -InputObject (Get-PSCallStack))));
 
 	$innerEx = $ErrorRecord.Exception.InnerException;
