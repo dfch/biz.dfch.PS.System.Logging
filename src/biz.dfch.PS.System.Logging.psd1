@@ -104,7 +104,9 @@ FileList = @(
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess
 PrivateData = @{
-	"MODULEVAR" = "biz_dfch_PS_System_Logging"
+	'MODULEVAR' = 'biz_dfch_PS_System_Logging'
+	,
+	'LicenseUri' = 'https://github.com/dfch/biz.dfch.PS.System.Logging/blob/master/LICENSE'
 }
 
 # HelpInfo URI of this module

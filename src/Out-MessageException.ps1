@@ -50,6 +50,7 @@ PARAM
 	[System.Management.Automation.ErrorRecord] $ErrorRecord
 )
 
+	# only for compatibility with older scripts that use $gotoSuccess
 	if($gotoSuccess -eq $ErrorRecord.Exception.Message) 
 	{
 		$fReturn = $true;
