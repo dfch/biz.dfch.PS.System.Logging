@@ -50,7 +50,7 @@ if( !(Test-Path ((Get-Variable -Name $mvar).Value.Log4NetConfigurationFile)) )
 [log4net.Config.XmlConfigurator]::ConfigureAndWatch((Get-Variable -Name $mvar).Value.Log4NetConfigurationFile);
 
 # get logger from envionment variable if defined, otherwise fallback to configuraiton file
-$loggerName = Get-Variable biz_dfch_PS_System_Logging_Loggers -ValueOnly -ErrorAction:SilentlyContinue;
+$loggerName = Get-Variable biz_dfch_PS_System_Logging_LoggerName -ValueOnly -ErrorAction:SilentlyContinue;
 if($loggerName)
 {
 	(Get-Variable -Name $mvar).Value.Logger = [log4net.LogManager]::GetLogger($loggerName);
@@ -103,8 +103,8 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCujKT4/7kuE4FBpEj5WrtJ13
-# /U+gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUv+oGx2USkRcGZHdG/vu+Ok7l
+# r2ygghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -203,26 +203,26 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTM9xsIxOPcFskq
-# 6PzW2W6690T5PDANBgkqhkiG9w0BAQEFAASCAQCnv8a3+sVEvICVYpF3HGzw5rIz
-# 21b8A4y33zeIizoHRvNXJOLfADyDns3sFw2z1JxlyEMHnyzwfXOv4ExxNwWFDQvb
-# 88nrUpTZOJEE+2sr2QQAsEsOU3Z/lBlqC34r0VBNK1kfRYu7IVEYLOIaavoUaaXK
-# MIlMf6ImWNF7lTADeWesxSQIDaxP3GbBIhCsWa+7UfgJ6Er1eYuEI6iNVxuRj8ct
-# Rg4JgeOZxw5FCVa+Ju9Bfses9zs2RluA6aTG1QnIDt6hdsIgcRXHpnDN27GQOPQQ
-# MA5PFWaIsZV+STTEJEaf8qqDXBwjLx5DdKh0fjmRQRgwmNslPky3iJuQsYlNoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRBOvqgEIhWbQux
+# w9AHEWk2M7TJeTANBgkqhkiG9w0BAQEFAASCAQBWL4+yd9ynXc/qJX3vVxg6F80m
+# 6IeZqme1FT6FunvdbtLDqHghXZlDGV4G0ranZz+VF2jvh7ff8wOaEPZA7Hz4t1Kf
+# upsHyjycc7QKVQvUuhCjSEB7V1tu4FaOv2WI1CcUssWMOXZK7oIavOYCYqsSiDtV
+# RMnyAt5xBt4wmfzSqT6Zg31enVM1B9CN8AkgdWrLYbBkSzIZZAIeAuSQFjTEupzV
+# 1XEvqCG8K8gdExiQYbjc55eGFM1hho2ZX/Xli5ia41vWJAxg/P6UPgfBGtWshA3Q
+# XXKqg0nppQ2l/5IyQipaTDu1ypSnAszr+T+o5+f4Q5Uenr1GNSDx92FPC8rioYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE2
-# MDYxNzEzMzg1MlowIwYJKoZIhvcNAQkEMRYEFB8P4Z3d5S3OE4Ocj6OlegZjC4pp
+# MDYxNzEzNDYzOFowIwYJKoZIhvcNAQkEMRYEFCLIl91X0i55augfh5W2vtDn+aXi
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQAQmUHL+aTmS3sqMah0
-# hjRv1a0Ez9QdGa8IBFpX12okiSICz3zsDEV4F0nivIl33EPP2sGisaAtrE7NfkYY
-# wpeW3Vr61boebZrInzibBTO6O9UcqVIXB1d/FrrBmEpplG30Ac/wCoyoiWhpuW6E
-# DB9fbHR/9aIb7pi7h5smA9tlXNya/hlcllecB6BHRF+SbH3zsS6zrIqWxyNAkf87
-# Fe1phNf6OCVVdd+scKTLZOF6oI/PrNnaKRvX+iOsRusiUZ2wpxhcWB1A9n9Keulh
-# 9Dw5BpfeHc8ErremyHfSvt3bPYl2QJ5vP/WJNZtvtAVbokcMeGAMCChJI/RFvUfV
-# hRm7
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQCI9vU1P2XmTbFfrtlB
+# rry7XFKog4Nbr1TKLQemzj3hAE0+tYI4ytXctUVga6bd1BzYkYiR+/VLNY9aeNSn
+# j2SgrE+zINu6N9hxfIBQpZfaxVADofFdXjY+YIRej3fOA3sO32JGP9NxRwkG2jM1
+# SepfehFIEnaAkQ/epcDgOrh8tdvR2421PozLrv574StYukj7m51DpMpOubBhQYuV
+# P3pThIgDe8SLmZvp6OfAmy2XzCKx9ay17uQbTlhmD6C48vgAgy6lk966v5TsXKeo
+# ah50KEfwTxSA3X/K9GSIkFc0xYoH9CXcZiNk3n9Ppz75FwbhOH2xzqdXrp4znJAk
+# hIxF
 # SIG # End signature block
