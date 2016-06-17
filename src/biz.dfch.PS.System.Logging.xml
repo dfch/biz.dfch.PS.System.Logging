@@ -95,7 +95,7 @@
       </En>
       <En>
         <S N="Key">Log4NetLogger</S>
-        <S N="Value">root</S>
+        <S N="Value">biz.dfch.PS.System.Logging</S>
       </En>
     </DCT>
   </Obj>

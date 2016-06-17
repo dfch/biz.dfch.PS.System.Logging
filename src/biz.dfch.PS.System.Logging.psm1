@@ -48,7 +48,18 @@ if( !(Test-Path ((Get-Variable -Name $mvar).Value.Log4NetConfigurationFile)) )
 	(Get-Variable -Name $mvar).Value.Log4NetConfigurationFile = Join-Path $PSScriptRoot -ChildPath (Get-Variable -Name $mvar).Value.Log4NetConfigurationFile;
 }
 [log4net.Config.XmlConfigurator]::ConfigureAndWatch((Get-Variable -Name $mvar).Value.Log4NetConfigurationFile);
-(Get-Variable -Name $mvar).Value.Logger = [log4net.LogManager]::GetLogger((Get-Variable -Name $mvar).Value.Log4NetLogger);
+
+# get logger from envionment variable if defined, otherwise fallback to configuraiton file
+$loggerName = Get-Variable biz_dfch_PS_System_Logging_Loggers -ValueOnly -ErrorAction:SilentlyContinue;
+if($loggerName)
+{
+	(Get-Variable -Name $mvar).Value.Logger = [log4net.LogManager]::GetLogger($loggerName);
+}
+else
+{
+	(Get-Variable -Name $mvar).Value.Logger = [log4net.LogManager]::GetLogger((Get-Variable -Name $mvar).Value.Log4NetLogger);
+}
+
 (Get-Variable -Name $mvar).Value.Escalated = [log4net.LogManager]::GetLogger("Escalated");
 
 Set-Variable -Name LOGGING_LOCK_PREFIX -Option 'Constant' -Value 'Global\biz-dfch-file-';
@@ -73,7 +84,7 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 <##
  #
  #
- # Copyright 2015 d-fens GmbH
+ # Copyright 2011-2016 d-fens GmbH
  #
  # Licensed under the Apache License, Version 2.0 (the "License");
  # you may not use this file except in compliance with the License.
@@ -92,8 +103,8 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFCjv8Y5oidNE+838DhzJirWI
-# Q/igghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCujKT4/7kuE4FBpEj5WrtJ13
+# /U+gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -192,26 +203,26 @@ Set-Variable -Name SysLogSeverity_DBG -Value 7;
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTlJpkEeApw4zBb
-# Jz6O43Rad5bW0DANBgkqhkiG9w0BAQEFAASCAQBeOyQ2lhYocMWsrfYGFEOlqqb5
-# +RBn9W51GG/Ixcp7Oo4rAbBcH8WaaDuE7D/crdWojmBo9lIcMjbgPxYDi6ypYyIf
-# 8r3Ubtr+1Nu2QK+ghDblOEkefhKQuu5qb+duQcKvlu7rlCDwIaM2mgkpk79Nv8+x
-# 5NFIDDuQpDMksXEz3tFVfR1j6ASMXMi5LP8w1X2UJZLI8BXa7TbOhDRPe6KlnZuo
-# Rqxy1nErnE7UPNU4xUBHcYP/3DqkddwOsYmQdov0IyrVcvFKnKr+xbYVMnBz0vtq
-# r6hVVgPaAAQO9+5Uoz+detPilDqJfSx23Pi4iTToLQevebunp77mixsglVSyoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTM9xsIxOPcFskq
+# 6PzW2W6690T5PDANBgkqhkiG9w0BAQEFAASCAQCnv8a3+sVEvICVYpF3HGzw5rIz
+# 21b8A4y33zeIizoHRvNXJOLfADyDns3sFw2z1JxlyEMHnyzwfXOv4ExxNwWFDQvb
+# 88nrUpTZOJEE+2sr2QQAsEsOU3Z/lBlqC34r0VBNK1kfRYu7IVEYLOIaavoUaaXK
+# MIlMf6ImWNF7lTADeWesxSQIDaxP3GbBIhCsWa+7UfgJ6Er1eYuEI6iNVxuRj8ct
+# Rg4JgeOZxw5FCVa+Ju9Bfses9zs2RluA6aTG1QnIDt6hdsIgcRXHpnDN27GQOPQQ
+# MA5PFWaIsZV+STTEJEaf8qqDXBwjLx5DdKh0fjmRQRgwmNslPky3iJuQsYlNoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
-# oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzM1owIwYJKoZIhvcNAQkEMRYEFNndXx45AWyePPbY+Hl0K+etR/zh
+# oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE2
+# MDYxNzEzMzg1MlowIwYJKoZIhvcNAQkEMRYEFB8P4Z3d5S3OE4Ocj6OlegZjC4pp
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
 # KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQBCD9Xqaj+zifY6c3lL
-# BnoEA05K+p38wtQA6AbbHYCRy5olJpsFP8Un/sx0SkyqEeD03e0B3Vpfkfq3wOqq
-# OFhVbNoisBIOn3P0Y16mTxvyI2waRQcVpfNG2k99BSDIMtUagSOI0DGDkQ0zruWS
-# otmuCo7ljKz1GSIeVf1wXXEGGKBUO4Dm5pLJ3iLNATx9yy5G6GCs78n6qDfCjv/k
-# wdE8ZzoOMVhj+s/8Z6x9fycyQpa6o5w4vjgm0W8UIDvUYNWXp92cZe1c/oac1WD6
-# ED+Ls5Md9Y7Tq+auj671J6WtesuU95sqcuy35UcDE0h27BINQHjratJoXgGAcQ0q
-# /B9D
+# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQAQmUHL+aTmS3sqMah0
+# hjRv1a0Ez9QdGa8IBFpX12okiSICz3zsDEV4F0nivIl33EPP2sGisaAtrE7NfkYY
+# wpeW3Vr61boebZrInzibBTO6O9UcqVIXB1d/FrrBmEpplG30Ac/wCoyoiWhpuW6E
+# DB9fbHR/9aIb7pi7h5smA9tlXNya/hlcllecB6BHRF+SbH3zsS6zrIqWxyNAkf87
+# Fe1phNf6OCVVdd+scKTLZOF6oI/PrNnaKRvX+iOsRusiUZ2wpxhcWB1A9n9Keulh
+# 9Dw5BpfeHc8ErremyHfSvt3bPYl2QJ5vP/WJNZtvtAVbokcMeGAMCChJI/RFvUfV
+# hRm7
 # SIG # End signature block

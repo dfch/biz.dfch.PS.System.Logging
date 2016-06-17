@@ -72,26 +72,14 @@
       </layout>
     </appender>
 
-    <root>
-      <level value="ALL" />
-      <!-- <appender-ref ref="RollingLogFileAppender" /> -->
-      <appender-ref ref="FileAppender" />
-    </root>
-	  <logger name="Esacalated" additivity="False">
+	<logger name="biz.dfch.PS.System.Logging" additivity="False">
+		<level value="ALL" />
+		<appender-ref ref="FileAppender" />
+	</logger>
+	<logger name="Esacalated" additivity="False">
 		<level value="ERROR" />
 		<appender-ref ref="ConsoleAppender" />
 		<!-- <appender-ref ref="EventLogAppender" /> -->
-	  </logger>
+	</logger>
   </log4net>
 </configuration>
-
-<!--
-Add-Type -Path C:\SOFTWARE\log4net\log4net-1.2.13-bin-newkey\log4net-1.2.13\bin\net\4.0\release\log4net.dll
-Add-Type -Path C:\SOFTWARE\log4net\log4net-1.2.13-bin-newkey\log4net-1.2.13\bin\net\4.0\release\gelf4net.dll
-[log4net.Config.XmlConfigurator]::ConfigureAndWatch("C:\data\Log4netConfiguration.xml")
-$logger = [log4net.LogManager]::GetLogger("root");
-$logger.Error("d-fens");
-$logger.Debug("d-fens");
-$logger.Info("d-fens");
-$logger.Debug("d-fens");
--->
