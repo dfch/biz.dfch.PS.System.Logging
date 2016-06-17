@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>biz.dfch.PS.System.Logging</id>
-        <version>1.1.4</version>
+        <version>1.2.0</version>
         <title>biz.dfch.PS.System.Logging</title>
         <authors>d-fens GmbH</authors>
         <owners>Ronald Rink</owners>
@@ -31,15 +31,13 @@ This PowerShell module contains Cmdlets that allow to perform logging from your 
 
 See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for more information.</description>
         <summary>This PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.</summary>
-        <releaseNotes>20151222
-* [bugfix] added exceptin handling in exception handler to fix problem when dumping exception with Out-String/Format-List
-
-* added Assert-IsTrue Cmdlet with Contract-Requires and Contract-Assert aliases for improved parameter validation
-* added streamlined Out-MessageException Cmdlet to facilitate exception logging
-* added skeleton for Cmdlet exception handling via trap handlers to facilitate exception handling
+        <releaseNotes>20160617
+* changed log4net logger to named logger "biz.dfch.PS.System.Logging" (previously root)
+* removed root logger configuration from log4net configuration file
+* added special handling for using a named logger defined in an environment variable called 'biz_dfch_PS_System_Logging_LoggerName'
 
 * run install.ps1 to copy the module to a PowerShell module path directory</releaseNotes>
-        <copyright>(c) 2012-2015 d-fens GmbH</copyright>
+        <copyright>(c) 2012-2016 d-fens GmbH</copyright>
         <language>en-US</language>
         <tags>dfch PowerShell Logging log4net</tags>
     </metadata>
