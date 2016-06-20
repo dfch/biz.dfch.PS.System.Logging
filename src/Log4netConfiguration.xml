@@ -5,8 +5,6 @@
   </configSections>
   <log4net>
 	<appender name="RollingLogFileAppender" type="log4net.Appender.RollingFileAppender">
-		<!-- <file value="C:\Logs\biz.dfch.PS.System.Logging\" /> -->
-		<!-- <file type="log4net.Util.PatternString" value="%property{DirectoryBase}\\%date{yyyy-MM}\\%date{yyyy-MM-dd-HH-mm}.log" /> -->
 		<file type="log4net.Util.PatternString" value="%property{DirectoryBase}\\%date{yyyy-MM}\\.log" />
 		
 		<appendToFile value="true" />
@@ -19,8 +17,7 @@
 			<conversionPattern value="%date{yyyy-MM-dd HH:mm:ss.fffzzz}|%-5level|%logger|%property{NDC}|%message%newline" />
 		</layout>
 	</appender>
-	<appender name="FileAppender" type="log4net.Appender.FileAppender">
-		<!-- <file value="C:\Logs\biz.dfch.PS.System.Logging\log-file.txt" /> -->
+	<appender name="FileAppender-biz.dfch.PS.System.Logging" type="log4net.Appender.FileAppender">
 		<file type="log4net.Util.PatternString" value="%property{DirectoryBase}\\%date{yyyy-MM}\\%date{yyyy-MM-dd}.log" />
 		<appendToFile value="true" />
 		<lockingModel type="log4net.Appender.FileAppender+MinimalLock" />
@@ -74,7 +71,7 @@
 
 	<logger name="biz.dfch.PS.System.Logging" additivity="False">
 		<level value="ALL" />
-		<appender-ref ref="FileAppender" />
+		<appender-ref ref="FileAppender-biz.dfch.PS.System.Logging" />
 	</logger>
 	<logger name="Esacalated" additivity="False">
 		<level value="ERROR" />
