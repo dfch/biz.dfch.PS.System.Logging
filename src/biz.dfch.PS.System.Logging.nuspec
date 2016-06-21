@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>biz.dfch.PS.System.Logging</id>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
         <title>biz.dfch.PS.System.Logging</title>
         <authors>d-fens GmbH</authors>
         <owners>Ronald Rink</owners>
@@ -31,8 +31,9 @@ This PowerShell module contains Cmdlets that allow to perform logging from your 
 
 See http://d-fens.ch/2013/01/16/module-biz-dfch-ps-system-logging/ and the [Wiki](https://github.com/dfch/biz.dfch.PS.System.Logging/wiki) for more information.</description>
         <summary>This PowerShell module provides Cmdlets to perform logging from your PowerShell script via log4net to arbitrary log format. Logging can be configured via log4net configuration file.</summary>
-        <releaseNotes>20160617
+        <releaseNotes>20160621
 * changed log4net logger to named logger "biz.dfch.PS.System.Logging" (previously root)
+* changed appender-ref in logger to "FileAppender-biz.dfch.PS.System.Logging" (previously FileAppender)
 * removed root logger configuration from log4net configuration file
 * added special handling for using a named logger defined in an environment variable called 'biz_dfch_PS_System_Logging_LoggerName'
 * updated to log4net 1.2.15 (2.0.5) from 1.2.13 (2.0.3)
