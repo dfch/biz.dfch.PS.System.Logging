@@ -58,16 +58,16 @@ This is a wrapper around the Apache 2.0 LOG4NET library.
 )]
 
 Param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[alias("sev")]
 		[ValidateRange(0,7)]
 		[int] $Severity = $(throw("You must specify a severity level.")), 
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[alias("fn")]
-		[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-		[Parameter(Mandatory = $true)]
+		[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+		[Parameter(Mandatory = $false)]
 		[alias("msg")]
-		[string] $Message = $(throw("You must specify a message string for logging.")), 
+		[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 		[Parameter(Mandatory = $false)]
 		[alias("fac")]
 		[ValidateRange(0,23)]
@@ -149,12 +149,12 @@ function Out-MessageEmergency() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageEmergency/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -169,12 +169,12 @@ function Out-MessageCritical() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageCritical/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -189,12 +189,12 @@ function Out-MessageAlert() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageAlert/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -209,12 +209,12 @@ function Out-MessageError() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageError/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -230,12 +230,12 @@ function Out-MessageWarning() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageWarning/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -251,12 +251,12 @@ function Out-MessageNotice() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageNotice/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -271,12 +271,12 @@ function Out-MessageInformational() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageInformational/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -306,12 +306,12 @@ Logs a DEBUG message for function "funcenstein" to the default logger, if enable
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageDebug/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
