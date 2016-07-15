@@ -4,7 +4,7 @@
 RootModule = 'biz.dfch.PS.System.Logging.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4.0.20160715'
+ModuleVersion = '1.4.1.20160715'
 
 # ID used to uniquely identify this module
 GUID = 'bb42dde0-0260-40bc-85e2-d8b6de1b5c0e'
