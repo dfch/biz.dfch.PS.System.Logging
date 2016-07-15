@@ -64,10 +64,10 @@ Param (
 		[int] $Severity = $(throw("You must specify a severity level.")), 
 		[Parameter(Mandatory = $false)]
 		[alias("fn")]
-		[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+		[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 		[Parameter(Mandatory = $false)]
 		[alias("msg")]
-		[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+		[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 		[Parameter(Mandatory = $false)]
 		[alias("fac")]
 		[ValidateRange(0,23)]
@@ -151,10 +151,10 @@ function Out-MessageEmergency() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -171,10 +171,10 @@ function Out-MessageCritical() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -191,10 +191,10 @@ function Out-MessageAlert() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -211,10 +211,10 @@ function Out-MessageError() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -232,10 +232,10 @@ function Out-MessageWarning() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -253,10 +253,10 @@ function Out-MessageNotice() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -273,10 +273,10 @@ function Out-MessageInformational() {
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -308,10 +308,10 @@ Logs a DEBUG message for function "funcenstein" to the default logger, if enable
     Param (
 			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[string] $FunctionName = $((Get-PSCallStack)[0].Command),
 			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
+			[string] $Message = $((Get-PSCallStack)[0].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -325,7 +325,7 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 <##
  #
  #
- # Copyright 2015 d-fens GmbH
+ # Copyright 2011-2016 d-fens GmbH
  #
  # Licensed under the Apache License, Version 2.0 (the "License");
  # you may not use this file except in compliance with the License.
