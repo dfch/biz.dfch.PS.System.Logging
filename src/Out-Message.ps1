@@ -58,16 +58,16 @@ This is a wrapper around the Apache 2.0 LOG4NET library.
 )]
 
 Param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[alias("sev")]
 		[ValidateRange(0,7)]
 		[int] $Severity = $(throw("You must specify a severity level.")), 
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $false)]
 		[alias("fn")]
-		[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-		[Parameter(Mandatory = $true)]
+		[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+		[Parameter(Mandatory = $false)]
 		[alias("msg")]
-		[string] $Message = $(throw("You must specify a message string for logging.")), 
+		[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 		[Parameter(Mandatory = $false)]
 		[alias("fac")]
 		[ValidateRange(0,23)]
@@ -149,12 +149,12 @@ function Out-MessageEmergency() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageEmergency/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -169,12 +169,12 @@ function Out-MessageCritical() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageCritical/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -189,12 +189,12 @@ function Out-MessageAlert() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageAlert/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -209,12 +209,12 @@ function Out-MessageError() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageError/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -230,12 +230,12 @@ function Out-MessageWarning() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageWarning/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -251,12 +251,12 @@ function Out-MessageNotice() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageNotice/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -271,12 +271,12 @@ function Out-MessageInformational() {
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageInformational/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -306,12 +306,12 @@ Logs a DEBUG message for function "funcenstein" to the default logger, if enable
 		HelpURI='http://dfch.biz/biz/dfch/PS/System/Logging/Out-MessageDebug/'
     )]
     Param (
-			[Parameter(Mandatory = $true)]
+			[Parameter(Mandatory = $false)]
 			[alias("fn")]
-			[string] $FunctionName = $(throw("You must specify a function name for logging.")), 
-			[Parameter(Mandatory = $true)]
+			[string] $FunctionName = $((Get-PSCallStack)[1].Command),
+			[Parameter(Mandatory = $false)]
 			[alias("msg")]
-			[string] $Message = $(throw("You must specify a message string for logging.")), 
+			[string] $Message = $((Get-PSCallStack)[1].InvocationInfo.PositionMessage), 
 			[Parameter(Mandatory = $false)]
 			[alias("fac")]
 			[int] $Facility = 0 
@@ -344,8 +344,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU8FCGvxupllgX+br0bboNe6pr
-# vZ+gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsWp8HhIo2FeEDtXXDHp8vaht
+# t4WgghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -389,10 +389,10 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # 23580ovvL72zT006rbtibiiTxAzL2ebK4BEClAOwvT+UKFaQHlPCJ9XJPM0aYx6C
 # WRW2QMqngarDVa8z0bV16AnqRwhIIvtdG/Mseml+xddaXlYzPK1X6JMlQsPSXnE7
 # ShxU7alVrCgFx8RsXdw8k/ZpPIJRzhoVPV4Bc/9Aouq0rtOO+u5dbEfHQfXUVlfy
-# GDcy1tTMS/Zx4HYwggSfMIIDh6ADAgECAhIRIQaggdM/2HrlgkzBa1IJTgMwDQYJ
+# GDcy1tTMS/Zx4HYwggSfMIIDh6ADAgECAhIRIdaZp2SXPvH4Qn7pGcxTQRQwDQYJ
 # KoZIhvcNAQEFBQAwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24g
 # bnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzIw
-# HhcNMTUwMjAzMDAwMDAwWhcNMjYwMzAzMDAwMDAwWjBgMQswCQYDVQQGEwJTRzEf
+# HhcNMTYwNTI0MDAwMDAwWhcNMjcwNjI0MDAwMDAwWjBgMQswCQYDVQQGEwJTRzEf
 # MB0GA1UEChMWR01PIEdsb2JhbFNpZ24gUHRlIEx0ZDEwMC4GA1UEAxMnR2xvYmFs
 # U2lnbiBUU0EgZm9yIE1TIEF1dGhlbnRpY29kZSAtIEcyMIIBIjANBgkqhkiG9w0B
 # AQEFAAOCAQ8AMIIBCgKCAQEAsBeuotO2BDBWHlgPse1VpNZUy9j2czrsXV6rJf02
@@ -408,12 +408,12 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # LmNybDBUBggrBgEFBQcBAQRIMEYwRAYIKwYBBQUHMAKGOGh0dHA6Ly9zZWN1cmUu
 # Z2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzdGltZXN0YW1waW5nZzIuY3J0MB0GA1Ud
 # DgQWBBTUooRKOFoYf7pPMFC9ndV6h9YJ9zAfBgNVHSMEGDAWgBRG2D7/3OO+/4Pm
-# 9IWbsN1q1hSpwTANBgkqhkiG9w0BAQUFAAOCAQEAgDLcB40coJydPCroPSGLWaFN
-# fsxEzgO+fqq8xOZ7c7tL8YjakE51Nyg4Y7nXKw9UqVbOdzmXMHPNm9nZBUUcjaS4
-# A11P2RwumODpiObs1wV+Vip79xZbo62PlyUShBuyXGNKCtLvEFRHgoQ1aSicDOQf
-# FBYk+nXcdHJuTsrjakOvz302SNG96QaRLC+myHH9z73YnSGY/K/b3iKMr6fzd++d
-# 3KNwS0Qa8HiFHvKljDm13IgcN+2tFPUHCya9vm0CXrG4sFhshToN9v9aJwzF3lPn
-# VDxWTMlOTDD28lz7GozCgr6tWZH2G01Ve89bAdz9etNvI1wyR5sB88FRFEaKmzCC
+# 9IWbsN1q1hSpwTANBgkqhkiG9w0BAQUFAAOCAQEAj6kakW0EpjcgDoOW3iPTa24f
+# bt1kPWghIrX4RzZpjuGlRcckoiK3KQnMVFquxrzNY46zPVBI5bTMrs2SjZ4oixNK
+# Eaq9o+/Tsjb8tKFyv22XY3mMRLxwL37zvN2CU6sa9uv6HJe8tjecpBwwvKu8LUc2
+# 35IgA+hxxlj2dQWaNPALWVqCRDSqgOQvhPZHXZbJtsrKnbemuuRQ09Q3uLogDtDT
+# kipbxFm7oW3bPM5EncE4Kq3jjb3NCXcaEL5nCgI2ZIi5sxsm7ueeYMRGqLxhM2zP
+# TrmcuWrwnzf+tT1PmtNN/94gjk6Xpv2fCbxNyhh2ybBNhVDygNIdBvVYBAexGDCC
 # BNYwggO+oAMCAQICEhEhDRayW4wRltP+V8mGEea62TANBgkqhkiG9w0BAQsFADBa
 # MQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEwMC4GA1UE
 # AxMnR2xvYmFsU2lnbiBDb2RlU2lnbmluZyBDQSAtIFNIQTI1NiAtIEcyMB4XDTE1
@@ -444,26 +444,26 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Out-MessageDebug -A
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT4Q7P/iPyIhozK
-# YjVjbkwyuSpOeTANBgkqhkiG9w0BAQEFAASCAQATYsGR5ARC11NPI7ZwDvLcn9dU
-# XALqBH2vm5X7NbqkcthcQocQghiK7ojoJtgGlMFV3TeNEd3Nq1gBgXJ+/KwSrS9x
-# jKNkTmyCM+axs+r2A43fCG1OB6TzL2hsobCaPMexierm0wvp3dOnEkSyxDuV2jsE
-# ocSPP2woYL3VSRUbZ0obNgbq4lIno2rUbY3RTTe3pD3fZJsCXvk4CCBq6W9qgkEW
-# i3bQ7C6RB196CFGG1XGvG9SQeNyYS0LM+QHq3+/swAI9pYK+nJN1906vMbc3TG/1
-# po8vRhdn+rKTqu18dtwSst8hTB52r3nmWoteMrzHnMPyMu4o33mdCw9og+fzoYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS7Q9PEmRCq52vy
+# VDHqnMGNrT78zTANBgkqhkiG9w0BAQEFAASCAQBm5N/JoaaiOITpsShnPVze8roX
+# vsKz5WT0FtpuRXGxfvISGnTgaO7aCwZ/j/PFwHVOAT9pfzfEVs42iY+f3A3YL3H8
+# a0nOEcE7Ufvh+V/LzbXayxg1QYO7f9zV4KAb6bZtmPckbNbExoKoa5qWF3O9GLYO
+# Olgd/mHpUkcMGvoKnUIwPUF519o1MWpGpt/5YAk1L7VFXTGmM+3TWff4rEVn/bh9
+# 6As42w97s7jH146i0Kum1yWUJedWTytUJiKL0h68ZKo8edhn7Zr6+Lm3YIrDeDsD
+# 8zlq5RnGsVy3T6A6nJefHYXSt62pLXrp50NPtRX/1y1TR2NjEGDR5LUhRb23oYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
-# ZXN0YW1waW5nIENBIC0gRzICEhEhBqCB0z/YeuWCTMFrUglOAzAJBgUrDgMCGgUA
-# oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1
-# MTIyMDE0MzgzNFowIwYJKoZIhvcNAQkEMRYEFK/haHO894k4gkY3V1d4nKLtBX6u
-# MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUs2MItNTN7U/PvWa5Vfrjv7Es
-# KeYwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
+# ZXN0YW1waW5nIENBIC0gRzICEhEh1pmnZJc+8fhCfukZzFNBFDAJBgUrDgMCGgUA
+# oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE2
+# MDcxNTA2NTUxMlowIwYJKoZIhvcNAQkEMRYEFKiT42/fK1DlREpixThM5dz98kNx
+# MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUY7gvq2H1g5CWlQULACScUCkz
+# 7HkwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# BqCB0z/YeuWCTMFrUglOAzANBgkqhkiG9w0BAQEFAASCAQB/5m9dvZrqxm7j86vJ
-# OmLRkFLGGZPuUdIzY+xTycPk7IboKELZpMEw4l0ec7SQ9sDlf9xgvKPG7Glcu80l
-# wydiV1EpGM3J5g3W9ZGC9BsZU14jHQvOBUF5B4KTsOFldgmGygtv3XgdbWg44jEU
-# g311l8JQ5YzF8VkIIBlpcS6gd7h4MsxnvQnfUyvoaJuduKkCpboy/JlIyb4Urt++
-# bVGVphfLihrUr3NUicd2x2p4hd1bu1BtzhRuJo/udNIoP5L7ZFo4B/cYCR8Of4o8
-# VWb51ttH8YbvIxx/8n8fFnS7oLcpC0iNqDQWJJjBA7HW0p/nvMu4YGVNkrbqoNEb
-# 1lU1
+# 1pmnZJc+8fhCfukZzFNBFDANBgkqhkiG9w0BAQEFAASCAQBqlcY3FBmlo1CgxNQE
+# CJzi6nq0XSm20k6FdNbxag68fK0rI05HLzXr97pjeRGOq/6LL29GA4D8lg9YIqs1
+# Jgqv3k+u91YUsTDxFK9vklk5w/eRBuOqSHgS0cXwbNRBcSqqSaZJ/pCYVqcXvhML
+# qzLJen2sZy9l0BSF11HoIwBZcDUOLJM6MmV6DoaO5oDlG25jVxzNho0rTHhYgmXn
+# ib21MU6wv2FC2rVL57UjvK04DEa0GFQ28c0zC/Xppy4hPSBude8Yn1xYZqAVt8iP
+# IEGPd32D1g0tOVqy0EZetOQg2nwQtqhBLsud/dEx7bODAh49mFvH5B0w7EEvZPQz
+# u8I4
 # SIG # End signature block

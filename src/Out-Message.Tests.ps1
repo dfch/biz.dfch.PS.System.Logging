@@ -1,81 +1,82 @@
-function Test-TrapSkeleton {
-<#
-.SYNOPSIS
-This function defines a skeleton with TRAP statements as a generic exception handler.
-#>
-PARAM
-(
-	# magic input parameter to select where to throw exception
-	[Parameter(Mandatory = $true, Position = 0)]
-	[ValidateSet('Begin', 'Process', 'End', 'ContractRequires', 'ContractAssert', 'None')]
-	[string] $ThrowExceptionIn
-	,
-	[Object] $TestParameterForContractRequires
-)
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 
-Begin
-{
-	trap { Out-MessageException $_; break; };
-	
-	$fReturn = $false;
-	$OutputParameter = $null;
-
-	# Do-Something
-
-	if($ThrowExceptionIn -eq 'Begin')
-	{
-		throw New-Object System.Exception("Exception in $ThrowExceptionIn");
-	}
+function Write-Warning {
+	return;
 }
 
-Process
-{
-	trap { Out-MessageException $_; break; };
+Describe -Tags "Out-Message" "Out-Message" {
 
-	if($ThrowExceptionIn -eq 'Process')
-	{
-		throw (New-Object System.Exception("Exception in $ThrowExceptionIn"));
-	}
+	Mock Export-ModuleMember { return $null; }
 	
-	# Do-Something
+	. "$here\$sut"
+	
+	BeforeEach {
+		# N/A
+	}
 
-	if($ThrowExceptionIn -eq 'ContractAssert')
-	{
-		$a = 1;
-		$b = 4;
-		Contract-Assert ($a -eq $b);
-	}
+	Context "Out-Message-Fails" {
 	
-	if($ThrowExceptionIn -eq 'ContractRequires')
-	{
-		Contract-Requires ($null -ne $TestParameterForContractRequires);
-		Contract-Requires ($TestParameterForContractRequires -is [string]);
-		Contract-Requires (![string]::IsNullOrWhitespace($TestParameterForContractRequires));
-		Contract-Requires (5 -lt $TestParameterForContractRequires.Count);
+		# Context wide constants
+		# N/A
+
+		It "Warmup" -Test {
+			$true | Should Be $true;
+		}
+		
+		It "Out-Message-WithInvalidSeverityThrows" -Test {
+		
+			$invalidSeverity = 42;
+			{ Out-Message $invalidSeverity "fn" "msg"; } | Should ThrowException ParameterBindingValidationException;
+		}
+
+		It "Out-Message-WithInvalidFacilityThrows" -Test {
+		
+			$validSeverity = 0;
+			$invalidFacility = 42;
+			{ Out-Message $validSeverity "fn" "msg" $invalidFacility; } | Should ThrowException ParameterBindingValidationException;
+		}
+
 	}
+
+	Context "Out-Message-Succeeds" {
 	
-	$fReturn = $true;
+		# Context wide constants
+		# N/A
+
+		It "Warmup" -Test {
+			$true | Should Be $true;
+		}
+		
+		It "Out-Message-Succeeds" -Test {
+			Out-Message 0 fn msg 0;
+		}
+
+		It "Log-Debug-Succeeds" -Test {
+		
+			Log-Debug "fn" "msg";
+		}
+
+		It "Log-Debug-WithNullMessageSucceeds" -Test {
+		
+			Log-Debug "fn" $null;
+		}
+
+		It "Log-Debug-WithNullFunctionNameAndMessageSucceeds" -Test {
+		
+			Log-Debug $null $null;
+		}
+
+		It "Log-Debug-WithMissingFunctionNameAndMessageSucceeds" -Test {
+		
+			Log-Debug;
+		}
+
+	}
 }
-
-End
-{
-	trap { Out-MessageException $_; break; };
-
-	# Do-Something
-
-	if($ThrowExceptionIn -eq 'End')
-	{
-		throw (New-Object System.Exception("Exception in $ThrowExceptionIn"));
-	}
-	
-	$OutputParameter = $fReturn;
-	return $OutputParameter;
-}
-
-} # function
 
 #
-# Copyright 2012-2015 d-fens GmbH
+# Copyright 2011-2016 d-fens GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -93,8 +94,8 @@ End
 # SIG # Begin signature block
 # MIIXDwYJKoZIhvcNAQcCoIIXADCCFvwCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3u5oDwapz/s/yYblltf7pENp
-# wwagghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUi325F3uSNdYeygOrZ4z+HI1l
+# Ir6gghHCMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -193,26 +194,26 @@ End
 # MDAuBgNVBAMTJ0dsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBTSEEyNTYgLSBH
 # MgISESENFrJbjBGW0/5XyYYR5rrZMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEM
 # MQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQB
-# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRobuGXSKIXMbhb
-# AKbA/+6jL2bnaDANBgkqhkiG9w0BAQEFAASCAQBWxONmP9ygwcyg0GNfDmlj7i1D
-# G6E5SrU2ROEunkusy4HXW/9PlZ1wCRb75Q9m2yLi1xseLfg/mfBdAVrTGmQYp2Nk
-# hlhy0u7wCEhCTckqdQczK/24IoaBMDewpxaMxEU3vnw1jI3syOPbPgfTwLMfrvda
-# H/E/bk847q9ITg2AWqKPo87Cj3Y83175gBHHrT6cf0Ao4jd70D752ZT1+iFFE0T4
-# NtVlqLJnah84aoeDLtPRwQFS7ZhV7dyUJ2+urkK8NDlSbpiWWBby0988hd+y60II
-# kYFy4u+8+WY60ni8v+F3C2DJ7u31vLerC5L4+O5ZOQmUp1oeEhLvV3/5tPFioYIC
+# gjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQot8L4XEF3lJML
+# BF3eZ0FezzkJ9TANBgkqhkiG9w0BAQEFAASCAQCyMatjYamLxm3MjGr2dpKLB+cB
+# iaPKClIMdFrKrG8KyNvRmt4Uf5xshFEMfPSK4F7QfIcxHya0KWB/b62NYX0vu9kF
+# +n3ID5pUp4lfDSSzUzzjXEsyFrLvMBsmf0FIYAY+JaZ/QctOff4bmFRKmlhq0dHm
+# E5EcbwVMbDbmxj9FodYAv8OvXRq/+uvwntXgGXVffpLvxTc2260JKzZVIExSBhg2
+# W62x4HsJPVwKHzDcXLTe/j0Tmy7aZU8hhzi8Lf9fE6lbpmLE9kjzEidoUn8eeV3c
+# hE1xi+GQMu4pOGOR9RB1duxTHwjUyBrZLXGTBoNDwWQ8LcAFB5HzHTGZMcjcoYIC
 # ojCCAp4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAX
 # BgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGlt
 # ZXN0YW1waW5nIENBIC0gRzICEhEh1pmnZJc+8fhCfukZzFNBFDAJBgUrDgMCGgUA
 # oIH9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE2
-# MDcxNTA2NTUxNFowIwYJKoZIhvcNAQkEMRYEFHF4Bu4KeKWU2aBDj/SqbTaCR2do
+# MDcxNTA2NTUxM1owIwYJKoZIhvcNAQkEMRYEFHC4CQouiaGiXtuS+otVbmw/hJSM
 # MIGdBgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUY7gvq2H1g5CWlQULACScUCkz
 # 7HkwbDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYt
 # c2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEh
-# 1pmnZJc+8fhCfukZzFNBFDANBgkqhkiG9w0BAQEFAASCAQANq9AfAVNF3sw1Mwwg
-# Uqem7TaPbPqmbtBCmMG9gzC5G9Tngyk1M38injS8gg6/wyOnmKLxCI04s/R6DJcJ
-# i9lZlUGHfp4qRwu9BAb/b7SXsPzLjm1dYGMh8kktLx9YO85LuD/gC2k6EJU6ShmS
-# E70Z7v38p03YZ4caMzTDyEGV3NUpoVt9YILANpgjZEuUVigP11XUrShoKjqLwz7Z
-# D1G/5CfX7A2eOWtM+xwWfRJiXKe6wGPFnVGYDIXGNTGeTI3J77t9jCzJq2FCssqI
-# XGKyI2z4/FkfevW6XUx8XhC9pucluFMaP6Ti4HGJCwCxSiNJY/PLJ2q7bBj0BN5Y
-# FbCZ
+# 1pmnZJc+8fhCfukZzFNBFDANBgkqhkiG9w0BAQEFAASCAQBxzbm5biNzwPwjNErz
+# hAy9PCsjtHeI/CYuaxpBhMURRy2wvDPkf+H5M4PZLRSPwSYm/ZrD13oVTB2kIIOa
+# A648qhr4Xs3tlB6JJxh6qu9f+SExN9jwwhRbigFr66DyNMPyBcTkw9cTs+jEG1tx
+# ljaiAnW0PxEiKT04Hw2Y7L2tySNKw+kL33US2lsqFu/QzdQbRSeh0ajXv+ZJolw8
+# s9N0QYRQP3GwWGqcCb/d3KYJl0sXoPGiT657ERfj5iV4AmsYsGC9Um+ofzTb92d1
+# 0MzBwLlYNZDFich1PqBh+U8G4m75Y1IV0NxiboyTLRY0OtZBbQNxv3E7ycD0RYvx
+# SklW
 # SIG # End signature block
