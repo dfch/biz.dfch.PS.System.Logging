@@ -117,6 +117,7 @@ PARAM
         $VerbosePreference = $PSCmdlet.GetVariableValue('VerbosePreference') -as [System.Management.Automation.ActionPreference]
     }
 
+	$Condition = !!$Condition;
     $failed = !(($Condition -is [System.Boolean]) -and $Condition);
 	if(!$failed)
 	{
@@ -152,7 +153,7 @@ Set-Alias Contract-Requires Assert-IsTrue
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Assert-IsTrue -Alias @('Contract-Requires', 'Contract-Assert'); } 
 
 #
-# Copyright 2015 d-fens GmbH
+# Copyright 2015-2016 d-fens GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
